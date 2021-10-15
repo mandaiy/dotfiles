@@ -1,9 +1,4 @@
 [[plugins]]
-# better status bar
-repo = 'itchyny/lightline.vim'
-hook_add = 'runtime .nvimrc.d/lightline.vim'
-
-[[plugins]]
 # syntax highlighting
 repo = 'cespare/vim-toml'
 
