@@ -163,7 +163,7 @@ function zle-line-init zle-keymap-select {
 	fi
 
 	PROMPT="
-<$mode> (%D %*) <%?> [%~]
+[$mode] (%D %* %?) [%~]
 $host$venv %# "
 
 	zle reset-prompt
