@@ -42,7 +42,6 @@ alias docker-exited="docker ps --filter \"status=exited\""
 
 # Docker-based commands
 alias docui="docker run --rm -itv /var/run/docker.sock:/var/run/docker.sock skanehira/docui"
-alias hadolint="docker run --rm -it -v ${PWD}:/workdir -w /workdir hadolint/hadolint"
 
 # options
 autoload -Uz select-word-style; select-word-style default
