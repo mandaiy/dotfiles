@@ -1,0 +1,2 @@
+key_bindings:
+  - { key: Q, mods: Control, chars: "\x11" }
