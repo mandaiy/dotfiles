@@ -66,7 +66,7 @@ endif
 
 
 source $VIMRUNTIME/macros/matchit.vim
-runtime .nvimrc.d/dein.vim
+runtime nvimrc.d/dein.vim
 
 " colorscheme setting
 colorscheme molokai

@@ -4,9 +4,14 @@ export EDITOR=nvim
 export LANG=en_US.UTF-8
 export LANGUAGE=en
 export LC_ALL=en_US.UTF-8
-
 export LSCOLORS=gxfxxxxxcxxxxxxxxxgxgx  # for GNU ls
 export LS_COLORS='di=01;36:ln=01;35:ex=01;32'
+
+if [[ -z $XDG_CONFIG_HOME ]]; then
+	export XDG_CONFIG_HOME=$HOME/.config
+fi
+
+export SCREENRC=${XDG_CONFIG_HOME}/screen/screenrc
 
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=1000000
@@ -177,8 +182,9 @@ KEYTIMEOUT=1 # times out multi-char key combos as fast as possible. (1/100th of 
 
 
 # zplug
-if [[ -d ~/.zplug ]]; then
-	source ~/.zplug/init.zsh
+export ZPLUG_HOME=${XDG_CONFIG_HOME}/zsh/zplug
+if [[ -d ${ZPLUG_HOME} ]]; then
+	source ${ZPLUG_HOME}/init.zsh
 
 	zplug "zplug/zplug", hook-build:'zplug --self-manage'
 

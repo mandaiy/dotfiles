@@ -45,7 +45,7 @@ if dein#load_state(s:dein_dir)
     call dein#add('Shougo/dein.vim')
     call dein#add('Shougo/vimproc.vim', {'build': 'make'})
     call dein#add('tomasr/molokai')
-    call dein#load_toml(s:config_dir . 'nvim/.nvimrc.d/plugins.toml', { 'lazy': 0 })
+    call dein#load_toml(s:config_dir . 'nvim/nvimrc.d/plugins.toml', { 'lazy': 0 })
 
     call dein#end()
     call dein#save_state()

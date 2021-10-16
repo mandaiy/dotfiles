@@ -1,17 +1,154 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env python3
 
-if ! type git > /dev/null; then
-	echo "git not found. abort"
-	exit 1
-fi
+import logging
+import os
+import sys
+import subprocess
+import shutil
+from abc import ABC, abstractmethod
+from pathlib import Path
 
-source .init.d/include
 
-local base_dir=$(cd $(dirname $0) && pwd)
+def expandvars(path: str) -> Path:
+    return Path(os.path.expandvars(path))
 
-create_symlink $base_dir
 
-install_zplug
-install_tpm
+def mkdir(p: Path, *args, **kwargs) -> None:
+    p.mkdir(*args, **kwargs)
+    logging.info("%s is created", p)
 
-install_nvimrc_files $base_dir
+
+def ln(src: str, dst: str) -> None:
+    if not dst.parent.exists():
+        mkdir(dst.parent, parents=True)
+
+    os.symlink(src, dst)
+    logging.info("Symlink %s is created for %s", dst, src)
+
+
+def git_clone(repo: str, dst: str) -> None:
+    dst = expandvars(dst)
+    if dst.exists():
+        raise RuntimeError()
+    
+    if not dst.parent.exists():
+        mkdir(dst.parent)
+    
+    ret = subprocess.run(["git", "clone", repo, str(dst)], capture_output=True)
+
+    if ret.returncode != 0:
+        raise RuntimeError(ret.stderr)
+
+    logging.info("Repository %s is cloned to %s", repo, dst)
+
+
+class InstallItem(ABC):
+    def __init__(self, dst: Path, exist_ok: bool) -> None:
+        self.dst = dst
+        self.exist_ok = exist_ok
+    
+    def check(self):
+        if not self.exist_ok and self.dst.exists():
+            raise RuntimeError(f"{self.dst} already exists")
+    
+    @abstractmethod
+    def exec(self) -> None:
+        pass
+
+class Symlink(InstallItem):
+    def __init__(self, src: str, dst: str, exist_ok: bool = False) -> None:
+        self.src = Path(__file__).parent / expandvars(src)
+        self.dst = expandvars(dst)
+
+        super().__init__(self.dst, exist_ok)
+    
+    def exec(self) -> None:
+        ln(self.src, self.dst)
+
+
+class SymlinkToConfig(Symlink):
+    def __init__(self, src: str, exist_ok: bool = False) -> None:
+        dst = f"$XDG_CONFIG_HOME/{src}"
+        super().__init__(src, dst, exist_ok)
+
+
+class Directory(InstallItem):
+    def __init__(self, dirname: str, exist_ok: bool = False) -> None:
+        self.dirname = expandvars(dirname)
+        self.exist_ok = exist_ok
+        super().__init__(self.dirname, exist_ok)
+    
+    def exec(self) -> None:
+        mkdir(self.dirname, parents=True, exist_ok=self.exist_ok)
+
+
+class GitClone(InstallItem):
+    def __init__(self, repo: str, dst: Path, exist_ok: bool = False) -> None:
+        self.repo = repo
+        self.dst = expandvars(dst)
+        super().__init__(self.dst, exist_ok)
+    
+    def exec(self) -> None:
+        git_clone(self.repo, self.dst)
+
+
+def check_system() -> None:
+    if shutil.which("git") is None:
+        raise RuntimeError("git not found")
+
+
+def setup_prerequisite():
+    if os.getenv("XDG_CONFIG_HOME") is None:
+        os.environ["XDG_CONFIG_HOME"] = os.path.expandvars("$HOME/.config")
+        logging.info("XDG_CONFIG_HOME is set as %s", os.path.expandvars("$HOME/.config"))
+    else:
+        logging.info("XDG_CONFIG_HOME is already set as %s", os.getenv("XDG_CONFIG_HOME"))
+
+
+def process() -> None:
+    check_system()
+    setup_prerequisite()
+
+    install_items = [
+        # alacritty
+        SymlinkToConfig("alacritty/alacritty.yml"),
+        # git
+        SymlinkToConfig("git/ignore"),
+        # nvim
+        SymlinkToConfig("nvim/init.vim"),
+        SymlinkToConfig("nvim/nvimrc.d"),
+        Directory("$HOME/.vim/.vimswap", exist_ok=True),
+        Directory("$HOME/.vim/.vimundo", exist_ok=True),
+        Directory("$HOME/.vim/.vimbackup", exist_ok=True),
+        # tmux
+        SymlinkToConfig("tmux/tmux.conf"),
+        GitClone("https://github.com/tmux-plugins/tpm", "$XDG_CONFIG_HOME/tmux/plugins/tpm"),
+        # screen
+        SymlinkToConfig("screen/screenrc"),
+        # zsh
+        Symlink("zsh/zshrc", "$HOME/.zshrc"),
+        Symlink("zsh/zshrc.d", "$HOME/.zshrc.d"),
+        GitClone("https://github.com/zplug/zplug", "$XDG_CONFIG_HOME/zsh/zplug"),
+    ]
+
+    for install_item in install_items:
+        install_item.check()
+    
+    for install_item in install_items:
+        install_item.exec()
+
+
+def main() -> None:
+    logging.basicConfig(level=logging.INFO, format="[%(funcName)s] %(message)s")
+
+    try:
+        process()
+    except RuntimeError as e:
+        logging.error("Error occurred: %s", e)
+        sys.exit(1)
+    
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
