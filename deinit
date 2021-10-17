@@ -1,9 +1,0 @@
-#!/usr/bin/env zsh
-
-source .init.d/include
-
-remove_symlink
-
-remove_zplug
-remove_tpm
-

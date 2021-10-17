@@ -1,17 +1,204 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env python3
 
-if ! type git > /dev/null; then
-	echo "git not found. abort"
-	exit 1
-fi
+import logging
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
 
-source .init.d/include
 
-local base_dir=$(cd $(dirname $0) && pwd)
+def expandvars(path: str) -> Path:
+    return Path(os.path.expandvars(path))
 
-create_symlink $base_dir
 
-install_zplug
-install_tpm
+def mkdir(p: Path, *args, **kwargs) -> None:
+    p.mkdir(*args, **kwargs)
+    logging.info("%s is created", p)
 
-install_nvimrc_files $base_dir
+
+def ln(src: Path, dst: Path, exist_ok: bool = False) -> None:
+    if not dst.parent.exists():
+        mkdir(dst.parent, parents=True)
+
+    if dst.exists():
+        if not exist_ok:
+            raise RuntimeError(f"{dst} is already exist")
+        if not dst.is_symlink():
+            raise RuntimeError(f"{dst} is not a symlink")
+
+        dst.unlink()
+
+    os.symlink(src, dst)
+    logging.info("Symlink %s is created for %s", dst, src)
+
+
+def git_clone(repo: str, dst: Path) -> None:
+    if dst.exists():
+        raise RuntimeError()
+
+    if not dst.parent.exists():
+        mkdir(dst.parent)
+
+    ret = subprocess.run(["git", "clone", repo, str(dst)], capture_output=True)
+
+    if ret.returncode != 0:
+        raise RuntimeError(ret.stderr)
+
+    logging.info("Repository %s is cloned to %s", repo, dst)
+
+
+class InstallItem:
+    def __init__(self, dst: Path, exist_ok: bool) -> None:
+        self.dst = dst
+        self.exist_ok = exist_ok
+
+    def check(self) -> None:
+        if not self.exist_ok and self.dst.exists():
+            raise RuntimeError(f"{self.dst} already exists")
+
+    def exec(self) -> None:
+        raise NotImplementedError
+
+
+class Symlink(InstallItem):
+    def __init__(self, src: str, dst: str, exist_ok: bool = False) -> None:
+        self.src = Path(__file__).parent / expandvars(src)
+        self.dst = expandvars(dst)
+
+        super().__init__(self.dst, exist_ok)
+
+    def exec(self) -> None:
+        ln(self.src, self.dst, self.exist_ok)
+
+    def check(self) -> None:
+        if not self.dst.exists():
+            return
+
+        if not self.exist_ok:
+            raise RuntimeError(f"{self.dst} already exists")
+
+        if self.dst.is_symlink():
+            return
+
+        raise RuntimeError(f"{self.dst} is not symlink. Abort")
+
+
+class SymlinkToConfig(Symlink):
+    def __init__(self, src: str, exist_ok: bool = False) -> None:
+        dst = f"$XDG_CONFIG_HOME/{src}"
+        super().__init__(src, dst, exist_ok)
+
+
+class Directory(InstallItem):
+    def __init__(self, dirname: str, exist_ok: bool = False) -> None:
+        self.dirname = expandvars(dirname)
+        self.exist_ok = exist_ok
+        super().__init__(self.dirname, exist_ok)
+
+    def exec(self) -> None:
+        mkdir(self.dirname, parents=True, exist_ok=self.exist_ok)
+
+
+class GitClone(InstallItem):
+    def __init__(self, repo: str, dst: str, exist_ok: bool = False) -> None:
+        self.repo = repo
+        self.dst = expandvars(dst)
+        self.already_cloned = False
+        super().__init__(self.dst, exist_ok)
+
+    def exec(self) -> None:
+        if not self.already_cloned:
+            git_clone(self.repo, self.dst)
+
+    def check(self) -> None:
+        if not self.dst.exists():
+            return
+
+        if not self.dst.is_dir():
+            raise RuntimeError(f"{self.dst} is not directory")
+
+        ret = subprocess.run(
+            "git config --get remote.origin.url".split(),
+            cwd=self.dst,
+            capture_output=True,
+        )
+
+        if ret.returncode != 0:
+            raise RuntimeError(f"{self.dst} is already exists but not git repository")
+
+        repo = ret.stdout.decode().strip()
+
+        if repo != self.repo:
+            raise RuntimeError(f"{self.dst} contains a different repository")
+
+        logging.info("Repository %s is already cloned to %s", self.repo, self.dst)
+        self.already_cloned = True
+
+
+def check_system() -> None:
+    if shutil.which("git") is None:
+        raise RuntimeError("git not found")
+
+
+def setup_prerequisite() -> None:
+    if os.getenv("XDG_CONFIG_HOME") is None:
+        os.environ["XDG_CONFIG_HOME"] = os.path.expandvars("$HOME/.config")
+        logging.info(
+            "XDG_CONFIG_HOME is set as %s", os.path.expandvars("$HOME/.config")
+        )
+    else:
+        logging.info(
+            "XDG_CONFIG_HOME is already set as %s", os.getenv("XDG_CONFIG_HOME")
+        )
+
+
+def process() -> None:
+    check_system()
+    setup_prerequisite()
+
+    install_items = [
+        # alacritty
+        SymlinkToConfig("alacritty/alacritty.yml", exist_ok=True),
+        # git
+        SymlinkToConfig("git/ignore", exist_ok=True),
+        # nvim
+        SymlinkToConfig("nvim/init.vim", exist_ok=True),
+        SymlinkToConfig("nvim/nvimrc.d", exist_ok=True),
+        Directory("$HOME/.vim/.vimswap", exist_ok=True),
+        Directory("$HOME/.vim/.vimundo", exist_ok=True),
+        Directory("$HOME/.vim/.vimbackup", exist_ok=True),
+        # tmux
+        SymlinkToConfig("tmux/tmux.conf", exist_ok=True),
+        GitClone(
+            "https://github.com/tmux-plugins/tpm", "$XDG_CONFIG_HOME/tmux/plugins/tpm"
+        ),
+        # screen
+        SymlinkToConfig("screen/screenrc", exist_ok=True),
+        # zsh
+        Symlink("zsh/zshrc", "$HOME/.zshrc", exist_ok=True),
+        Symlink("zsh/zshrc.d", "$HOME/.zshrc.d", exist_ok=True),
+        GitClone("https://github.com/zplug/zplug", "$XDG_CONFIG_HOME/zsh/zplug"),
+    ]
+
+    for install_item in install_items:
+        install_item.check()
+
+    for install_item in install_items:
+        install_item.exec()
+
+
+def main() -> None:
+    logging.basicConfig(level=logging.INFO, format="[%(funcName)s] %(message)s")
+
+    try:
+        process()
+    except RuntimeError as e:
+        logging.error("Error occurred: %s", e)
+        sys.exit(1)
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
