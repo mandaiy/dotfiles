@@ -21,7 +21,7 @@ def ln(src: Path, dst: Path, exist_ok: bool = False) -> None:
     if not dst.parent.exists():
         mkdir(dst.parent, parents=True)
 
-    if dst.exists():
+    if dst.is_symlink():
         if not exist_ok:
             raise RuntimeError(f"{dst} is already exist")
         if not dst.is_symlink():
