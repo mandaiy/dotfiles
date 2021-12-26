@@ -1,18 +1,51 @@
 [[plugins]]
-# syntax highlighting
-repo = 'cespare/vim-toml'
+# A colorscheme
+repo = 'sainnhe/gruvbox-material'
 
 [[plugins]]
-# syntax highlighting
-repo = 'derekwyatt/vim-scala'
+# For :DeinUpdate.
+repo = 'wsdjeg/dein-ui.vim'
 
 [[plugins]]
-# syntax highlighting
-repo = 'chikamichi/mediawiki.vim'
+# Lua library for nvim.
+repo = 'nvim-lua/plenary.nvim'
 
 [[plugins]]
-# makes gvim-only colorschemes work transparently in terminal vim
-repo = 'vim-scripts/CSApprox'
+# Language Server config.
+repo = 'neovim/nvim-lspconfig'
+
+[[plugins]]
+# Language Server installer.
+repo = 'williamboman/nvim-lsp-installer'
+
+[[plugins]]
+# Completion plugin.
+repo = 'ms-jpq/coq_nvim'
+rev = 'coq'
+
+[[plugins]]
+# Bundled data for coq_nvim.
+repo = 'ms-jpq/coq.artifacts'
+rev = 'artifacts'
+
+[[plugins]]
+# Outline viewer.
+repo = 'stevearc/aerial.nvim'
+
+[[plugins]]
+# A fuzzy finder.
+repo = 'nvim-telescope/telescope.nvim'
+hook_add = '''
+    nnoremap <Leader>ff <cmd>Telescope find_files<cr>
+    nnoremap <Leader>fg <cmd>Telescope live_grep<cr>
+    nnoremap <Leader>fb <cmd>Telescope buffers<cr>
+    nnoremap <Leader>fh <cmd>Telescope help_tags<cr>
+'''
+
+# [[plugins]]
+# # Better syntax highlighting.
+# repo = 'nvim-treesitter/nvim-treesitter'
+# hook_post_update = 'TSUpdate'
 
 [[plugins]]
 repo = 'scrooloose/nerdtree'
@@ -27,8 +60,8 @@ hook_add = '''
     let g:NERDTreeWinSize = 50
     set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
 
-    nnoremap <silent> <F2> :NERDTreeFind<CR>
-    nnoremap <silent> <F3> :NERDTreeTabsToggle<CR>
+    nnoremap <silent> <Leader>nf :NERDTreeFind<CR>
+    nnoremap <silent> <Leader>nt :NERDTreeTabsToggle<CR>
 '''
 
 [[plugins]]
@@ -36,64 +69,60 @@ repo = 'jistr/vim-nerdtree-tabs'
 depends = ['nerdtree']
 
 [[plugins]]
-# displays tags in a window, ordered by scope
-# http://majutsushi.github.io/tagbar/
-repo = 'majutsushi/tagbar'
-hook_add = '''
-    nmap <silent> <F4> :TagbarToggle<CR>
-
-    let g:tagbar_autofocus = 1
-
-    let g:tagbar_type_ruby = {
-        \ 'kinds' : [
-            \ 'm:modules',
-            \ 'c:classes',
-            \ 'd:describes',
-            \ 'C:contexts',
-            \ 'f:methods',
-            \ 'F:singleton methods'
-        \ ]
-    \ }
-'''
-
-[[plugins]]
-# displays the indention levels with thin vertical lines
+# Displays the indention levels with thin vertical lines.
 repo = 'Yggdroot/indentLine'
 
 [[plugins]]
-# handles extra whitespaces
+# Handles extra whitespaces.
 repo = 'ntpeters/vim-better-whitespace'
 
 [[plugins]]
-# shows a git diff in the gutter (sign column) and stages/undoes hunks.
+# Shows a git diff in the gutter (sign column) and stages/undoes hunks.
 repo = 'airblade/vim-gitgutter'
 
 [[plugins]]
-# detects file type under the cursor according to context
+# Detects file type under the cursor according to context.
 repo = 'Shougo/context_filetype.vim'
 
 [[plugins]]
-# syntax highlighting for context
+# Syntax highlighting for context.
 repo = 'osyo-manga/vim-precious'
 depends = ['context_filetype.vim']
 
 [[plugins]]
-# git in vim
+# Git in vim.
 repo = 'tpope/vim-fugitive'
 
 [[plugins]]
-# better word object handling
+# Better word object handling.
 repo = 'tpope/vim-surround'
 
 [[plugins]]
-# better '.' command
+# Better '.' command.
 repo = 'tpope/vim-repeat'
 
 [[plugins]]
-# comment-out plugin
+# A comment-out plugin.
 repo = 'tpope/vim-commentary'
+on_i = 1
 
 [[plugins]]
-# A solid language pack (syntax, indent, etc)
+# A solid language pack (syntax, indent, etc).
 repo = 'sheerun/vim-polyglot'
+
+[[plugins]]
+# golang plugin for minimalists
+repo = 'mattn/vim-goimports'
+on_ft = ['go']
+hook_add = '''
+    let g:goimports_simplify_cmd = 'gofumpt'
+'''
+
+[[plugins]]
+# A better spell checker.
+repo = 'kamykn/spelunker.vim'
+on_i = 1
+hook_add = '''
+    set nospell  " Turn off builin spellcheck.
+'''
 
