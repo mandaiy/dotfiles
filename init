@@ -179,6 +179,15 @@ def process() -> None:
         Symlink("zsh/zshrc", "$HOME/.zshrc", exist_ok=True),
         Symlink("zsh/zshrc.d", "$HOME/.zshrc.d", exist_ok=True),
         GitClone("https://github.com/zplug/zplug", "$XDG_CONFIG_HOME/zsh/zplug"),
+        # fish
+        SymlinkToConfig("fish/config.fish", exist_ok=True),
+        SymlinkToConfig("fish/fish_plugins", exist_ok=True),
+        SymlinkToConfig("fish/functions/fish_prompt.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fish_right_prompt.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf_git_branch.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf_docker.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf_z.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf_bazel.fish", exist_ok=True),
     ]
 
     for install_item in install_items:
