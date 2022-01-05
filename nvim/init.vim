@@ -1,8 +1,5 @@
 scriptencoding utf8
 
-filetype on
-syntax on
-
 set autoindent
 set autoread  " Enable vim to reload a file when the file is modified.
 set backspace=start,eol,indent  " Enable to erase/concat lines/delete with backspace key
@@ -140,7 +137,7 @@ let mapleader = "\<Space>"
 " Leave Terminal-insert mode.
 tnoremap <silent> <Leader>\ <C-\><C-n>
 " Open terminal
-nnoremap <silent> <Leader>sh :terminal<CR>
+nnoremap <silent> <Leader>sh :tabnew +terminal<CR>
 
 " Change the working directory to current file's directory.
 nnoremap <Leader>. :lcd %:p:h<CR>
@@ -206,8 +203,6 @@ if has('macunix')
   vmap <C-c> :w !pbcopy<CR><CR>
 endif
 
-
-"" no one is really happy until you have this shortcuts
 cnoreabbrev W! w!
 cnoreabbrev Q! q!
 cnoreabbrev Qall! qall!
@@ -222,8 +217,8 @@ cnoreabbrev Qall qall
 " Load plugins with dein.vim.
 runtime nvimrc.d/dein.vim
 
-" Change colorscheme after loading plugins.
-colorscheme gruvbox-material
+filetype on
+syntax on
 
 lua <<EOF
 
@@ -281,7 +276,17 @@ end)
 
 EOF
 
-if filereadable(expand('$HOME/.nvimrc.local'))
-    source $HOME/.nvimrc.local
+" Disable python2 support.
+let g:loaded_python_provider = 0
+
+" Set python virtual env if exists in XDG_CONFIG_HOME.
+if isdirectory(expand('$XDG_CONFIG_HOME/nvim/venv'))
+  let g:python3_host_prog = expand('$XDG_CONFIG_HOME/nvim/venv/bin/python')
+  let g:black_virtualenv = expand('$XDG_CONFIG_HOME/nvim/venv')
+endif
+
+" Load local config file if exists.
+if filereadable(expand('$XDG_CONFIG_HOME/nvim/init.local.vim'))
+    source $XDG_CONFIG_HOME/nvim/init.local.vim
 endif
 
