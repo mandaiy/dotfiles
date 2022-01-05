@@ -1,52 +1,48 @@
 scriptencoding utf8
 
-set number
-set nowrap
+set autoindent
+set autoread  " Enable vim to reload a file when the file is modified.
+set backspace=start,eol,indent  " Enable to erase/concat lines/delete with backspace key
+set backupcopy=no
+set clipboard=unnamed
+set cmdheight=2  " Give more space for displaying messages.
+set colorcolumn=121
 set cursorline
-set splitbelow
+set expandtab
 set fileencodings=utf-8,iso-2022-jp,euc-jp,sjis
 set fileformats=unix,dos,mac
-set spelllang=en,cjk
-set autoread " enable vim to reload a file when the file is modified
 set hidden
-set expandtab
-set tabstop=4 softtabstop=4 shiftwidth=4
-set autoindent
-set smartindent
-set colorcolumn=121
-set showtabline=2
-set showcmd
-set laststatus=2
-set noshowmode
-set list
-set listchars=tab:=-
-set mouse=a
-set textwidth=0
-set formatoptions=q
 set hlsearch
-set swapfile
-set directory=~/.vim/.vimswap
-set clipboard=unnamed
-set nobackup
-set nowritebackup
-set backupcopy=no
-set backupdir=~/.vim/.vimbackup
-set undodir=~/.vim/.vimundo
-set backspace=start,eol,indent " enable to erase/concat lines/delete with backspace key
-set wildmenu wildmode=list:full " command completion
-set matchpairs+=<:>
-set updatetime=200
 set ignorecase
-set smartcase
-set wrapscan
-set incsearch
 set inccommand=split
-set ttimeoutlen=1  " timeout msec for ESC key
-set noerrorbells visualbell t_vb=  " Disable visualbell
-set conceallevel=0 " Disable concealment
-set cmdheight=2 " Give more space for displaying messages.
+set incsearch
+set laststatus=2
+set list
+set matchpairs+=<:>
+set mouse=a
+set nobackup
+set noerrorbells
+set noshowmode
+set nowrap
+set nowritebackup
+set number
+set shiftwidth=4
 set shortmess+=c  " Don't pass messages to |ins-completion-menu|.
+set showcmd
+set showtabline=2
 set signcolumn=yes  " Always show the signcolumn.
+set smartcase
+set smartindent
+set softtabstop=4
+set spelllang=en,cjk
+set splitbelow " Open a window below the current one.
+set swapfile
+set tabstop=4
+set termguicolors  " Truecolor
+set ttimeoutlen=1  " Timeout msec for key code sequences.
+set updatetime=200
+set wildmenu
+set wildmode=list:full " command completion
 
 " %<: truncation position,
 " %n: buffer number, %m: modified?, %r: RO?, %h: help buffer?,
@@ -64,17 +60,9 @@ set statusline+=%=
 " %P: percent of current position
 set statusline+=%1l\ %L,%c%V\ %P
 
-if exists('$SHELL')
-    set shell=$SHELL
-else
-    set shell=/bin/sh
-endif
-
 if has('unnamedplus')
   set clipboard=unnamed,unnamedplus " Copy/Paste/Cut
 endif
-
-source $VIMRUNTIME/macros/matchit.vim
 
 highlight MatchParen ctermfg=white ctermbg=red
 highlight SpellBad cterm=bold,italic
@@ -86,17 +74,14 @@ highlight CursorLineNr ctermbg=NONE
 
 
 function! s:ruby()
-  " Ruby specific settings. Called by `augroup vimrc-ruby`.
+  " Ruby specific settings.
   let g:rubycomplete_buffer_loading = 1
   let g:rubycomplete_classes_in_global = 1
   let g:rubycomplete_rails = 1
-
-  " For ruby refactory
-  runtime! macros/matchit.vim
 endfunction
 
 function! s:tex()
-  " TeX specific settings. Called by `augroup vimrc-init`.
+  " TeX specific settings.
   let g:tex_flavor = 'latex'
 endfunction
 
@@ -110,69 +95,40 @@ function! s:imeoff()
   endif
 endfunction
 
-if !exists('*s:setupWrapping')
-  function s:setupWrapping()
-    set wrap
-    set wm=2
-    set textwidth=79
-  endfunction
-endif
-
 
 augroup vimrc-init
   autocmd!
-  autocmd GUIEnter * set visualbell t_vb=
-  autocmd BufRead, BufNewFile *.md set filetype=markdown " set filetype markdown when the file extension is .md
-  autocmd BufRead, BufNewFile Vagrantfile set filetype=ruby
+  " Remove trailing spaces on save.
   autocmd BufWrite * StripWhitespace
-
-  autocmd FileType tex call s:tex()
-  autocmd FileType ruby setlocal shiftwidth=2 tabstop=2 softtabstop=2
-  autocmd FileType yaml setlocal shiftwidth=2 tabstop=2 softtabstop=2
-  autocmd FileType sh,zsh setlocal noexpandtab
-  autocmd FileType sh,zsh setlocal nolist
-  autocmd FileType rst,markdown,gitrebase,gitcommit,vcs-commit,hybrid,text,help,tex set spell
-  autocmd InsertLeave * call s:imeoff()
-augroup END
-
-augroup vimrc-sync-fromstart
-  "" Syntax highlight syncing from start unless 200 lines
-  autocmd!
+  " Syntax highlight syncing from start unless 200 lines
   autocmd BufEnter * :syntax sync maxlines=200
-augroup END
-
-augroup vimrc-remember-cursor-position
-  autocmd!
+  " Remembers the cursor's position.
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-augroup END
 
-augroup vimrc-wrapping
-  autocmd!
-  autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
-augroup END
-
-augroup vimrc-make-cmake
-  autocmd!
-  autocmd FileType make setlocal noexpandtab
+  " CMake
   autocmd BufNewFile,BufRead CMakeLists.txt setlocal filetype=cmake
-augroup END
+  autocmd FileType make setlocal noexpandtab
 
-augroup vimrc-golang
-  autocmd!
-  autocmd FileType go setlocal noexpandtab shiftwidth=4 tabstop=4 sts=4
-augroup END
+  " Golang
+  autocmd FileType go setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4
 
-augroup vimrc-python
-  autocmd!
-  autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 colorcolumn=79
-      \ formatoptions+=croq softtabstop=4
+  " Python
+  autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+      \ colorcolumn=79 formatoptions+=croq
       \ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-augroup END
 
-augroup vimrc-ruby
-  autocmd!
-  autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
-  autocmd FileType ruby set tabstop=2|set shiftwidth=2|set expandtab softtabstop=2
+  " Ruby
+  autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec,Vagrantfile setlocal filetype=ruby
+  autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2 | call s:ruby()
+
+  " Shell
+  autocmd FileType sh,zsh setlocal noexpandtab
+
+  " TeX
+  autocmd FileType tex call s:tex()
+
+  " Yaml
+  autocmd FileType yaml setlocal shiftwidth=2 tabstop=2 softtabstop=2
 augroup END
 
 
@@ -277,15 +233,15 @@ on_attach = function(client, bufnr)
   buf_set_keymap('n', '<Leader>gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   buf_set_keymap('n', '<Leader>gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', '<Leader>gh', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gH', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gR', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '[d',         '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']d',         '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<Leader>ge', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gq', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap('n', '<Leader>gi', '<Cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', '<Leader>gH', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<Leader>gt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<Leader>gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', '<Leader>gR', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '[d',         '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']d',         '<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<Leader>ge', '<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '<Leader>gq', '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 
   -- Calls aerial's on_attach.
   aerial.on_attach(client)
