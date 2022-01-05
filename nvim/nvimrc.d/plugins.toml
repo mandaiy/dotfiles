@@ -1,6 +1,12 @@
 [[plugins]]
 # A colorscheme
 repo = 'sainnhe/gruvbox-material'
+hook_add = '''
+    augroup dein-color-scheme
+      autocmd!
+      autocmd VimEnter * nested colorscheme gruvbox-material
+    augroup END
+'''
 
 [[plugins]]
 # For :DeinUpdate.
@@ -123,6 +129,11 @@ hook_add = '''
 repo = 'kamykn/spelunker.vim'
 on_i = 1
 hook_add = '''
-    set nospell  " Turn off builin spellcheck.
+    set nospell  " Turn off builtin spellcheck.
 '''
+
+[[plugins]]
+# Python black support.
+repo = 'psf/black'
+rev = 'stable'
 
