@@ -48,11 +48,6 @@ hook_add = '''
     nnoremap <Leader>fh <cmd>Telescope help_tags<cr>
 '''
 
-# [[plugins]]
-# # Better syntax highlighting.
-# repo = 'nvim-treesitter/nvim-treesitter'
-# hook_post_update = 'TSUpdate'
-
 [[plugins]]
 repo = 'scrooloose/nerdtree'
 hook_add = '''
