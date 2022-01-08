@@ -104,6 +104,8 @@ augroup vimrc-init
   autocmd BufEnter * :syntax sync maxlines=200
   " Remembers the cursor's position.
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+  " Turn IME off when leaveing insert mode.
+  autocmd InsertLeave * call s:imeoff()
 
   " CMake
   autocmd BufNewFile,BufRead CMakeLists.txt setlocal filetype=cmake
@@ -140,7 +142,7 @@ tnoremap <silent> <Leader>\ <C-\><C-n>
 nnoremap <silent> <Leader>sh :tabnew +terminal<CR>
 
 " Change the working directory to current file's directory.
-nnoremap <Leader>. :lcd %:p:h<CR>
+nnoremap <Leader>cd :lcd %:p:h<CR>
 
 "" Prev buffer
 noremap <Leader>bp :bp<cr>
@@ -197,12 +199,6 @@ inoremap <C-e> <End>
 inoremap <C-d> <Del>
 inoremap <C-h> <BS>
 
-if has('macunix')
-  " pbcopy for OSX copy/paste
-  vmap <C-x> :!pbcopy<CR>
-  vmap <C-c> :w !pbcopy<CR><CR>
-endif
-
 cnoreabbrev W! w!
 cnoreabbrev Q! q!
 cnoreabbrev Qall! qall!
@@ -222,13 +218,15 @@ syntax on
 
 lua <<EOF
 
--- setup outline viewer
-local aerial = require('aerial')
+-- coq completion
+vim.g.coq_settings = {
+  ["auto_start"] = true,
+  ["keymap.manual_complete"] = "<Leader>.",
+}
 
 on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 
-  -- Mappings
   local opts = { noremap=true, silent=true }
   buf_set_keymap('n', '<Leader>gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   buf_set_keymap('n', '<Leader>gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
@@ -244,19 +242,13 @@ on_attach = function(client, bufnr)
   buf_set_keymap('n', '<Leader>gq', '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 
   -- Calls aerial's on_attach.
-  aerial.on_attach(client)
+  require('aerial').on_attach(client)
 end
 
 -- load the extra nvim config set by direnv config
 for rc in string.gmatch(vim.env.EXTRA_NVIMRC or '', '[^:]+') do
     vim.cmd('exec "source' .. rc .. '"')
 end
-
--- coq completion
-vim.g.coq_settings = {
-  ["auto_start"] = true,
-  ["keymap.manual_complete"] = "<Leader>.",
-}
 
 local coq = require('coq')
 

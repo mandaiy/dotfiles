@@ -11,6 +11,7 @@ if status is-interactive
 
     if type -q direnv
         eval (direnv hook fish)
+        alias tmux "direnv exec / tmux"
     end
 
     alias docker-sha256="docker inspect --format='{{index .RepoDigests 0}}'"
