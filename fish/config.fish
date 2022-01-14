@@ -9,6 +9,10 @@ if status is-interactive
         set -x EDITOR nvim
     end
 
+    if test -z "$GOPATH"
+        set -x GOPATH $HOME/.go
+    end
+
     if type -q direnv
         eval (direnv hook fish)
         alias tmux "direnv exec / tmux"

@@ -243,6 +243,7 @@ on_attach = function(client, bufnr)
 
   -- Calls aerial's on_attach.
   require('aerial').on_attach(client)
+  buf_set_keymap('n', '<Leader>go', ':AerialToggle<CR>', opts)
 end
 
 -- load the extra nvim config set by direnv config
