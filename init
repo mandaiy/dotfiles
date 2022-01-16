@@ -165,20 +165,11 @@ def process() -> None:
         # nvim
         SymlinkToConfig("nvim/init.vim", exist_ok=True),
         SymlinkToConfig("nvim/nvimrc.d", exist_ok=True),
-        Directory("$HOME/.vim/.vimswap", exist_ok=True),
-        Directory("$HOME/.vim/.vimundo", exist_ok=True),
-        Directory("$HOME/.vim/.vimbackup", exist_ok=True),
         # tmux
         SymlinkToConfig("tmux/tmux.conf", exist_ok=True),
         GitClone(
             "https://github.com/tmux-plugins/tpm", "$XDG_CONFIG_HOME/tmux/plugins/tpm"
         ),
-        # screen
-        SymlinkToConfig("screen/screenrc", exist_ok=True),
-        # zsh
-        Symlink("zsh/zshrc", "$HOME/.zshrc", exist_ok=True),
-        Symlink("zsh/zshrc.d", "$HOME/.zshrc.d", exist_ok=True),
-        GitClone("https://github.com/zplug/zplug", "$XDG_CONFIG_HOME/zsh/zplug"),
         # fish
         SymlinkToConfig("fish/config.fish", exist_ok=True),
         SymlinkToConfig("fish/fish_plugins", exist_ok=True),
