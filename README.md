@@ -17,7 +17,7 @@ Prerequisites: [brew](brew) for both macOS and Linux
 [fisher]:https://github.com/jorgebucaran/fisher
 
 ```sh
-> brew install bat fd fish fzf ripgrep tmux
+> brew install bat fd fish fzf neovim ripgrep tmux
 > curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
 ```
 
