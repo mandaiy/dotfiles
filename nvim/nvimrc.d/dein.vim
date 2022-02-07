@@ -42,9 +42,13 @@ execute "set runtimepath+=" . s:dein_repo_dir
 if dein#load_state(s:dein_dir)
     call dein#begin(s:dein_dir)
 
-    call dein#add('Shougo/dein.vim')
+    " Let dein manage dein itself.
+    call dein#add(s:dein_repo_dir)
     call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+
+    " Load plugins.toml
     call dein#load_toml(s:config_dir . '/nvim/nvimrc.d/plugins.toml', { 'lazy': 0 })
+    call dein#load_toml(s:config_dir . '/nvim/nvimrc.d/plugins_lazy.toml', { 'lazy': 1 })
 
     call dein#end()
     call dein#save_state()

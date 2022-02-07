@@ -1,0 +1,14 @@
+[[plugins]]
+# Python black support.
+repo = 'psf/black'
+rev = 'stable'
+on_ft = ['python']
+
+[[plugins]]
+# golang plugin for minimalists
+repo = 'mattn/vim-goimports'
+on_ft = ['go']
+hook_add = '''
+    let g:goimports_simplify_cmd = 'gofumpt'
+'''
+
