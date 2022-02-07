@@ -53,7 +53,12 @@ set statusline+=%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}
 " Show the full path or file name.
 if winwidth(0) >= 130 | set statusline+=\ %F | else | set statusline+=%t | endif
 " %y: file type
-set statusline+=\ %y\ %{fugitive#statusline()}
+set statusline+=\ %y
+" If fugitive#statusline is available, show git-branch
+if exists("fugitive#statusline")
+  set statusline+=\ %{fugitive#statusline()}
+endif
+
 " Separator of left-side and right-side.
 set statusline+=%=
 " %1l: cursor line, %L: total line, %c: cursor column,
@@ -217,7 +222,6 @@ filetype on
 syntax on
 
 lua <<EOF
-
 -- coq completion
 vim.g.coq_settings = {
   ["auto_start"] = true,
@@ -242,8 +246,11 @@ on_attach = function(client, bufnr)
   buf_set_keymap('n', '<Leader>gq', '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 
   -- Calls aerial's on_attach.
-  require('aerial').on_attach(client)
-  buf_set_keymap('n', '<Leader>go', ':AerialToggle<CR>', opts)
+  local ok, aerial = pcall(require, 'aerial')
+  if ok then
+    aerial.on_attach(client, bufnr)
+    buf_set_keymap('n', '<Leader>go', ':AerialToggle<CR>', opts)
+  end
 end
 
 -- load the extra nvim config set by direnv config
@@ -251,22 +258,28 @@ for rc in string.gmatch(vim.env.EXTRA_NVIMRC or '', '[^:]+') do
     vim.cmd('exec "source' .. rc .. '"')
 end
 
-local coq = require('coq')
-
 -- setup local servers
-local lsp_installer = require("nvim-lsp-installer")
+local ok, lsp_installer = pcall(require, 'nvim-lsp-installer')
+if ok then
+  local coq = require('coq')
 
-lsp_installer.on_server_ready(function(server)
-  local opts = {
-    on_attach = on_attach,
-    flags = {
-      debounce_text_changes = 150,
-    },
-  }
+  lsp_installer.on_server_ready(function(server)
+    local opts = {
+      on_attach = on_attach,
+      flags = {
+        debounce_text_changes = 150,
+      },
+    }
+    server:setup(coq.lsp_ensure_capabilities(opts))
+  end)
+end
 
-  server:setup(coq.lsp_ensure_capabilities(opts))
-end)
-
+local ok, aerial = pcall(require, 'aerial')
+if ok then
+  aerial.setup({
+      backends = {"lsp"},
+  })
+end
 EOF
 
 " Disable python2 support.
