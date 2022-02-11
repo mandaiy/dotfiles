@@ -222,11 +222,43 @@ filetype on
 syntax on
 
 lua <<EOF
--- coq completion
-vim.g.coq_settings = {
-  ["auto_start"] = true,
-  ["keymap.manual_complete"] = "<Leader>.",
-}
+function setup_lsp(servers, opts)
+  local ok, lspconfig = pcall(require, 'lspconfig')
+  if not ok then
+    print("LspSetup: lspconfig not found")
+    return
+  end
+
+  local ok, aerial = pcall(require, 'aerial')
+  if ok then
+    aerial.setup({
+        backends = {"lsp"},
+    })
+  end
+
+  -- coq settings. This has to precede require('coq').
+  vim.g.coq_settings = {
+    ["auto_start"] = true,
+    ["keymap.manual_complete"] = "<Leader>.",
+  }
+
+  local ok, coq = pcall(require, 'coq')
+  if not ok then
+    print("LspSetup: coq not found")
+  else
+    print("LspSetup: coq found. use its functionality")
+    opts = coq.lsp_ensure_capabilities(opts)
+  end
+
+  for server, config in pairs(servers) do
+    if vim.fn.executable(config.executable) ~= 0 then
+      print("LspSetup: setting up for", server)
+      lspconfig[server].setup(opts)
+    else
+      print("LspSetup: executable '", config.executable, "' not found")
+    end
+  end
+end
 
 on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
@@ -258,28 +290,19 @@ for rc in string.gmatch(vim.env.EXTRA_NVIMRC or '', '[^:]+') do
     vim.cmd('exec "source' .. rc .. '"')
 end
 
--- setup local servers
-local ok, lsp_installer = pcall(require, 'nvim-lsp-installer')
-if ok then
-  local coq = require('coq')
+local servers = {
+  terraformls = {
+    executable = 'terraform-ls'
+  }
+}
+local opts = {
+  on_attach = on_attach,
+  flags = {
+    debounce_text_changes = 150,
+  },
+}
 
-  lsp_installer.on_server_ready(function(server)
-    local opts = {
-      on_attach = on_attach,
-      flags = {
-        debounce_text_changes = 150,
-      },
-    }
-    server:setup(coq.lsp_ensure_capabilities(opts))
-  end)
-end
-
-local ok, aerial = pcall(require, 'aerial')
-if ok then
-  aerial.setup({
-      backends = {"lsp"},
-  })
-end
+setup_lsp(servers, opts)
 EOF
 
 " Disable python2 support.

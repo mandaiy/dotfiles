@@ -22,6 +22,7 @@ if status is-interactive
     alias docker-exited="docker ps --filter \"status=exited\""
 
     alias _f=_fzf_wrapper
+    alias cd-gitroot="cd (git rev-parse --show-toplevel)"
 
     # bindings
     bind \cj 'fzf_z'
