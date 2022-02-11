@@ -21,10 +21,6 @@ repo = 'nvim-lua/plenary.nvim'
 repo = 'neovim/nvim-lspconfig'
 
 [[plugins]]
-# Language Server installer.
-repo = 'williamboman/nvim-lsp-installer'
-
-[[plugins]]
 # Completion plugin.
 repo = 'ms-jpq/coq_nvim'
 rev = 'coq'
@@ -128,6 +124,12 @@ hook_add = '''
         autocmd ColorScheme *
         \ highlight SpelunkerSpellBad cterm=underline ctermfg=247 gui=underline guifg=#9e9e9e |
         \ highlight SpelunkerComplexOrCompoundWord cterm=underline ctermfg=NONE gui=underline guifg=NONE
-    augroup enD
+    augroup END
+
+    let g:spelunker_white_list_for_user = [
+        \ 'backend',
+        \ 'okta',
+        \ 'terraform',
+        \ ]
 '''
 
