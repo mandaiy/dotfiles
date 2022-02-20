@@ -17,7 +17,7 @@ jobs:
 
       - name: build
         working-directory: ./docker
-        run: docker build -t dotfiles:linux-amd64 --platform linux/amd64 .
+        run: docker build -t mandaiy/dotfiles:linux-amd64 --platform linux/amd64 .
 
       - name: login
         uses: actions-hub/docker/login@master
@@ -28,4 +28,4 @@ jobs:
       - name: push
         uses: actions-hub/docker@master
         with:
-          args: push dotfiles:linux-amd64
+          args: push mandaiy/dotfiles:linux-amd64
