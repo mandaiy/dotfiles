@@ -12,8 +12,20 @@ jobs:
   push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
+        uses: actions/checkout@v2
 
       - name: build
         working-directory: ./docker
         run: docker build -t dotfiles:linux-amd64 --platform linux/amd64 .
+
+      - name: login
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: push
+        uses: actions-hub/docker@master
+        with:
+          args: push dotfiles:linux-amd64
