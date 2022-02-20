@@ -1,0 +1,19 @@
+name: docker-build
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build
+        working-directory: ./docker
+        run: docker build -t dotfiles:linux-amd64 --platform linux/amd64 .
