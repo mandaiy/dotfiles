@@ -2,15 +2,16 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
 
     if test -z "$XDG_CONFIG_HOME"
-        set -x XDG_CONFIG_HOME $HOME/.config
+        set -gx XDG_CONFIG_HOME $HOME/.config
     end
 
     if test -z "$EDITOR"
-        set -x EDITOR nvim
+        set -gx EDITOR nvim
     end
 
     if test -z "$GOPATH"
-        set -x GOPATH $HOME/.go
+        set -gx GOPATH $HOME/.go
+        set -gx PATH $GOPATH/bin $PATH
     end
 
     if type -q direnv
