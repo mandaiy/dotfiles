@@ -45,25 +45,16 @@ hook_add = '''
 '''
 
 [[plugins]]
-repo = 'scrooloose/nerdtree'
+# A filer
+repo = 'lambdalisue/fern.vim'
 hook_add = '''
-    "" NERDTree configuration
-    let g:NERDTreeChDirMode=2
-    let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
-    let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
-    let g:NERDTreeShowBookmarks=1
-    let g:nerdtree_tabs_focus_on_files=1
-    let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
-    let g:NERDTreeWinSize = 50
-    set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
-
-    nnoremap <silent> <Leader>nf :NERDTreeFind<CR>
-    nnoremap <silent> <Leader>nt :NERDTreeTabsToggle<CR>
+    noremap <silent> <Leader>nf :Fern . -reveal=%<CR>
 '''
 
 [[plugins]]
-repo = 'jistr/vim-nerdtree-tabs'
-depends = ['nerdtree']
+# A fern plugin
+repo = 'lambdalisue/fern-git-status.vim'
+depends = ['lambdalisue/fern.vim']
 
 [[plugins]]
 # Displays the indention levels with thin vertical lines.
