@@ -272,16 +272,14 @@ on_attach = function(client, bufnr)
   buf_set_keymap('n', '<Leader>gt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   buf_set_keymap('n', '<Leader>gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap('n', '<Leader>gR', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '[d',         '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']d',         '<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<Leader>ge', '<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gq', '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap('n', '<Leader>ge', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
+  buf_set_keymap('n', '<Leader>gq', '<Cmd>lua vim.diagnostic.setloclist()<CR>', opts)
 
   -- Calls aerial's on_attach.
   local ok, aerial = pcall(require, 'aerial')
   if ok then
     aerial.on_attach(client, bufnr)
-    buf_set_keymap('n', '<Leader>go', ':AerialToggle<CR>', opts)
+    buf_set_keymap('n', '<Leader>go', ':AerialToggle left<CR>', opts)
   end
 end
 

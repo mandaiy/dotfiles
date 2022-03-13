@@ -118,7 +118,9 @@ hook_add = '''
     augroup END
 
     let g:spelunker_white_list_for_user = [
+        \ 'args',
         \ 'backend',
+        \ 'coord',
         \ 'okta',
         \ 'terraform',
         \ ]
