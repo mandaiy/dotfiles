@@ -35,26 +35,73 @@ rev = 'artifacts'
 repo = 'stevearc/aerial.nvim'
 
 [[plugins]]
+# A plugin for Debugger Adapter Protocol.
+repo = 'mfussenegger/nvim-dap'
+hook_add = '''
+    nnoremap <F5>  <Cmd>lua require('dap').continue()<CR>
+    nnoremap <F10> <Cmd>lua require('dap').step_over()<CR>
+    nnoremap <F11> <Cmd>lua require('dap').step_into()<CR>
+    nnoremap <F12> <Cmd>lua require('dap').step_out()<CR>
+
+    nnoremap <Leader>db <Cmd>lua require('dap').toggle_breakpoint()<CR>
+    nnoremap <Leader>dc <Cmd>lua require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
+'''
+
+[[plugins]]
+# A plugin for DAP UI.
+repo = 'rcarriga/nvim-dap-ui'
+depends = ['mfussenegger/nvim-dap']
+hook_add = '''
+lua <<EOF
+    local ok, dap = pcall(require, 'dap')
+    if ok then
+        dapui = require('dapui')
+        dapui.setup()
+
+        dap = require('dap')
+        dap.listeners.before['event_initialized']['custom'] = function(session, body)
+            dapui.open()
+        end
+        dap.listeners.before['event_terminated']['custom'] = function(session, body)
+            dapui.close()
+        end
+    end
+EOF
+'''
+
+[[plugins]]
+# A plugin for DAP UI.
+repo = 'theHamsta/nvim-dap-virtual-text'
+depends = ['mfussenegger/nvim-dap']
+hook_add = '''
+    lua require('nvim-dap-virtual-text').setup()
+'''
+
+[[plugins]]
 # A fuzzy finder.
 repo = 'nvim-telescope/telescope.nvim'
 hook_add = '''
-    nnoremap <Leader>ff <cmd>Telescope find_files<cr>
-    nnoremap <Leader>fg <cmd>Telescope live_grep<cr>
-    nnoremap <Leader>fb <cmd>Telescope buffers<cr>
-    nnoremap <Leader>fh <cmd>Telescope help_tags<cr>
+    nnoremap <Leader>ff <Cmd>Telescope find_files<CR>
+    nnoremap <Leader>fg <Cmd>Telescope live_grep<CR>
+    nnoremap <Leader>fb <Cmd>Telescope buffers<CR>
+    nnoremap <Leader>fh <Cmd>Telescope help_tags<CR>
 '''
 
 [[plugins]]
 # A filer
 repo = 'lambdalisue/fern.vim'
 hook_add = '''
-    noremap <silent> <Leader>nf :Fern . -reveal=%<CR>
+    nnoremap <silent> <Leader>nf :Fern . -reveal=%<CR>
 '''
 
 [[plugins]]
 # A fern plugin
 repo = 'lambdalisue/fern-git-status.vim'
 depends = ['lambdalisue/fern.vim']
+
+[[plugins]]
+# EditorConfig plugin.
+repo = 'editorconfig/editorconfig-vim'
 
 [[plugins]]
 # Displays the indention levels with thin vertical lines.
@@ -123,6 +170,16 @@ hook_add = '''
         \ 'coord',
         \ 'okta',
         \ 'terraform',
+        \ 'unmarshal',
         \ ]
+'''
+
+[[plugins]]
+repo = 'ShikChen/osc52.vim'
+hook_add = '''
+    augroup osc52
+        autocmd!
+        autocmd TextYankPost * if v:event.operator ==# 'y' | call SendViaOSC52(getreg(v:event.regname)) | endif
+    augroup END
 '''
 
