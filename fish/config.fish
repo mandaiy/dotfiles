@@ -1,5 +1,20 @@
+function _brew_shellenv
+    set -l brew
+
+    switch (uname)
+    case Darwin
+        set brew /opt/homebrew/bin/brew
+    case Linux
+        set brew /home/linuxbrew/.linuxbrew/bin/brew
+    end
+
+    test -x $brew; and eval ($brew shellenv)
+end
+
+
 if status is-interactive
     # Commands to run in interactive sessions can go here
+    _brew_shellenv
 
     if test -z "$XDG_CONFIG_HOME"
         set -gx XDG_CONFIG_HOME $HOME/.config
@@ -17,6 +32,10 @@ if status is-interactive
     if type -q direnv
         eval (direnv hook fish)
         alias tmux "direnv exec / tmux"
+    end
+
+    if type -q rbenv
+        rbenv init - fish | source
     end
 
     alias docker-sha256="docker inspect --format='{{index .RepoDigests 0}}'"

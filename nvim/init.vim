@@ -2,9 +2,9 @@ scriptencoding utf8
 
 set autoindent
 set autoread  " Enable vim to reload a file when the file is modified.
-set backspace=start,eol,indent  " Enable to erase/concat lines/delete with backspace key
+set backspace=start,eol,indent  " Enable to erase/concat lines/delete with backspace key.
 set backupcopy=no
-set clipboard=unnamed
+set clipboard=unnamedplus
 set cmdheight=2  " Give more space for displaying messages.
 set colorcolumn=121
 set cursorline
@@ -42,11 +42,12 @@ set termguicolors  " Truecolor
 set ttimeoutlen=1  " Timeout msec for key code sequences.
 set updatetime=200
 set wildmenu
-set wildmode=list:full " command completion
+set wildmode=list:full " Command completion
 
-" %<: truncation position,
-" %n: buffer number, %m: modified?, %r: RO?, %h: help buffer?,
-" %w: preview window?,
+" %<: truncation position
+" %n: buffer number, %m: modified?
+" %r: RO?, %h: help buffer?
+" %w: preview window?
 set statusline=%<[%n]%m%r%w
 " Show fenc and ff.
 set statusline+=%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}
@@ -61,7 +62,9 @@ endif
 
 " Separator of left-side and right-side.
 set statusline+=%=
-" %1l: cursor line, %L: total line, %c: cursor column,
+" %1l: cursor line
+" %L: total line
+" %c: cursor column
 " %P: percent of current position
 set statusline+=%1l\ %L,%c%V\ %P
 
@@ -105,7 +108,7 @@ augroup vimrc-init
   autocmd!
   " Remove trailing spaces on save.
   autocmd BufWrite * StripWhitespace
-  " Syntax highlight syncing from start unless 200 lines
+  " Syntax highlight syncing from start unless 200 lines.
   autocmd BufEnter * :syntax sync maxlines=200
   " Remembers the cursor's position.
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
@@ -150,27 +153,27 @@ nnoremap <silent> <Leader>sh :tabnew +terminal<CR>
 nnoremap <Leader>cd :lcd %:p:h<CR>
 
 "" Prev buffer
-noremap <Leader>bp :bp<cr>
+nnoremap <Leader>bp :bp<cr>
 "" Next buffer
-noremap <Leader>bn :bn<cr>
+nnoremap <Leader>bn :bn<cr>
 "" Close buffer
-noremap <Leader>bd :bd<CR>
+nnoremap <Leader>bd :bd<CR>
 
 "" Opens an edit command with the path of the currently edited file filled in
-noremap <Leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
+nnoremap <Leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
 "" Opens a tab edit command with the path of the currently edited file filled
-noremap <Leader>tab :tabedit <C-R>=expand("%:p:h") . "/" <CR>
+nnoremap <Leader>tab :tabedit <C-R>=expand("%:p:h") . "/" <CR>
 "" Opens a split command with the path of the currently edited file filled
-noremap <Leader>sp :split <C-R>=expand("%:p:h") . "/" <CR>
+nnoremap <Leader>sp :split <C-R>=expand("%:p:h") . "/" <CR>
 "" Opens a vsplit command with the path of the currently edited file filled
-noremap <Leader>vs :vsplit <C-R>=expand("%:p:h") . "/" <CR>
+nnoremap <Leader>vs :vsplit <C-R>=expand("%:p:h") . "/" <CR>
 
 " move by displaylines
-noremap <silent> j gj
-noremap <silent> k gk
+nnoremap <silent> j gj
+nnoremap <silent> k gk
 
-" Search mappings: These will make it so that going to the next one in a
-" search will center on the line it's found in.
+" Search mappings:
+" These enable VIM to display the one in a search at the center of the screen.
 nnoremap n nzzzv
 nnoremap N Nzzzv
 
@@ -187,8 +190,8 @@ nnoremap <S-Tab> gT
 nnoremap <silent> <S-t> :tabnew<CR>
 
 " Vmap for maintain Visual Mode after shifting > and <
-vmap < <gv
-vmap > >gv
+vnoremap < <gv
+vnoremap > >gv
 
 " Move visual block
 vnoremap J :m '>+1<CR>gv=gv
@@ -261,29 +264,28 @@ function setup_lsp(servers, opts)
 end
 
 on_attach = function(client, bufnr)
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-
   local opts = { noremap=true, silent=true }
-  buf_set_keymap('n', '<Leader>gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gD', '<Cmd>tab split | lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gh', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gi', '<Cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gH', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gR', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<Leader>ge', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
-  buf_set_keymap('n', '<Leader>gq', '<Cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gD', '<Cmd>tab split | lua vim.lsp.buf.definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gh', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gi', '<Cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gH', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gR', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>ge', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gq', '<Cmd>lua vim.diagnostic.setloclist()<CR>', opts)
 
   -- Calls aerial's on_attach.
   local ok, aerial = pcall(require, 'aerial')
   if ok then
     aerial.on_attach(client, bufnr)
-    buf_set_keymap('n', '<Leader>go', ':AerialToggle left<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>go', ':AerialToggle left<CR>', opts)
   end
 end
 
--- load the extra nvim config set by direnv config
+-- Load the extra nvim config set by direnv config.
 for rc in string.gmatch(vim.env.EXTRA_NVIMRC or '', '[^:]+') do
     vim.cmd('exec "source' .. rc .. '"')
 end
@@ -291,7 +293,13 @@ end
 local servers = {
   terraformls = {
     executable = 'terraform-ls'
-  }
+  },
+  rust_analyzer = {
+    executable = 'rust-analyzer',
+  },
+  solargraph = {  -- Ruby LSP
+    executable = 'solargraph'
+  },
 }
 local opts = {
   on_attach = on_attach,
