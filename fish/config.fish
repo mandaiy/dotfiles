@@ -69,6 +69,10 @@ if status is-interactive
 
     # Disable venv's prompt modification.
     set -gx VIRTUAL_ENV_DISABLE_PROMPT true
+
+    if test -z "$Z_DATA"
+        z_cleanup
+    end
 end
 
 set -l config_local $XDG_CONFIG_HOME/fish/config.local.fish
