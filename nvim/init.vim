@@ -218,6 +218,15 @@ cnoreabbrev W w
 cnoreabbrev Q q
 cnoreabbrev Qall qall
 
+" Disable python2 support.
+let g:loaded_python_provider = 0
+
+" Set python virtual env if exists in XDG_CONFIG_HOME.
+if isdirectory(expand('$XDG_CONFIG_HOME/nvim/venv'))
+  let g:python3_host_prog = expand('$XDG_CONFIG_HOME/nvim/venv/bin/python')
+  let g:black_virtualenv = expand('$XDG_CONFIG_HOME/nvim/venv')
+endif
+
 " Load plugins with dein.vim.
 runtime nvimrc.d/dein.vim
 
@@ -225,13 +234,14 @@ filetype on
 syntax on
 
 lua <<EOF
-function setup_lsp(servers, opts)
+function setup_lsp(opts)
   local ok, lspconfig = pcall(require, 'lspconfig')
   if not ok then
     print("LspSetup: lspconfig not found")
     return
   end
 
+  -- Setup aerial with lsp backend.
   local ok, aerial = pcall(require, 'aerial')
   if ok then
     aerial.setup({
@@ -243,8 +253,10 @@ function setup_lsp(servers, opts)
   vim.g.coq_settings = {
     ["auto_start"] = true,
     ["keymap.manual_complete"] = "<Leader>.",
+    ["xdg"] = true,
   }
 
+  -- Update opts if coq is available.
   local ok, coq = pcall(require, 'coq')
   if not ok then
     print("LspSetup: coq not found")
@@ -253,13 +265,30 @@ function setup_lsp(servers, opts)
     opts = coq.lsp_ensure_capabilities(opts)
   end
 
-  for server, config in pairs(servers) do
-    if vim.fn.executable(config.executable) ~= 0 then
-      print("LspSetup: setting up for", server)
-      lspconfig[server].setup(opts)
-    else
-      print("LspSetup: executable '", config.executable, "' not found")
-    end
+  -- Setup LSP servers.
+  --
+  if vim.fn.executable("terraform-ls") ~= 0 then
+    print("LspSetup: setting up for terraform-ls")
+    lspconfig.terraformls.setup(opts)
+  end
+
+  if vim.fn.executable("rust-analyzer") ~= 0 then
+    print("LspSetup: setting up for rust-analyzer")
+    lspconfig.rust_analyzer.setup(opts)
+  end
+
+  if vim.fn.executable("solargraph") ~= 0 then
+    print("LspSetup: setting up for solargraph")
+    lspconfig.solargraph.setup(opts)
+  end
+
+  if vim.fn.executable("pyright") ~= 0 then
+    print("LspSetup: setting up for pyright")
+    pythonPath = vim.fn.system("which python")
+    opts["python"] = {
+      pythonPath = pythonPath
+    }
+    lspconfig.pyright.setup(opts)
   end
 end
 
@@ -285,43 +314,21 @@ on_attach = function(client, bufnr)
   end
 end
 
+setup_lsp({
+  on_attach = on_attach,
+  flags = {
+    debounce_text_changes = 150,
+  },
+})
+
 -- Load the extra nvim config set by direnv config.
 for rc in string.gmatch(vim.env.EXTRA_NVIMRC or '', '[^:]+') do
     vim.cmd('exec "source' .. rc .. '"')
 end
 
-local servers = {
-  terraformls = {
-    executable = 'terraform-ls'
-  },
-  rust_analyzer = {
-    executable = 'rust-analyzer',
-  },
-  solargraph = {  -- Ruby LSP
-    executable = 'solargraph'
-  },
-}
-local opts = {
-  on_attach = on_attach,
-  flags = {
-    debounce_text_changes = 150,
-  },
-}
-
-setup_lsp(servers, opts)
 EOF
-
-" Disable python2 support.
-let g:loaded_python_provider = 0
-
-" Set python virtual env if exists in XDG_CONFIG_HOME.
-if isdirectory(expand('$XDG_CONFIG_HOME/nvim/venv'))
-  let g:python3_host_prog = expand('$XDG_CONFIG_HOME/nvim/venv/bin/python')
-  let g:black_virtualenv = expand('$XDG_CONFIG_HOME/nvim/venv')
-endif
 
 " Load local config file if exists.
 if filereadable(expand('$XDG_CONFIG_HOME/nvim/init.local.vim'))
     source $XDG_CONFIG_HOME/nvim/init.local.vim
 endif
-
