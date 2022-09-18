@@ -1,27 +1,33 @@
-## Dependency
+## Setup
 
-Prerequisites: [brew](brew) for both macOS and Linux
+### Install [homebrew][brew]
+
+### Install fish and other dependencies via homebrew
+
 
 | Dependency        | Note |
 |-------------------|------|
 | bat               |      |
 | fd                | Better find |
 | fish              |      |
-| [fisher](fisher)  | Plugin manager for fish |
+| [fisher][fisher]  | Plugin manager for fish |
 | fzf               | Fuzzy search |
 | neovim            |      |
 | ripgrep           |      |
 | tmux              |      |
 
-[brew]:https://brew.sh/index
-[fisher]:https://github.com/jorgebucaran/fisher
 
-```sh
-> brew install bat fd fish fzf neovim ripgrep tmux
-> curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
+```
+$ /opt/homebrew/bin/brew install bat fd fish fzf neovim ripgrep tmux  # macOS
 ```
 
-### fish in remote hosts
+### Change login shell
+
+a) On macOS, change login shell to fish in Settings. On Ubuntu, use chsh.
+
+b) exec fish shel in the default shell. See below.
+
+#### fish in remote hosts
 It is safe to not change the login shell to `fish` in remote hosts (machines to be SSH'ed)
 because sometimes SSH does not work well when connecting to `fish`-`chsh`ed machines.
 
@@ -32,7 +38,22 @@ case $- in
 esac
 ```
 
+### Execute `init` script
+
+```
+> ./init
+```
+
+### Install [fisher][fisher]
+
+```
+> curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+```
+
 ### tmux
 ``init`` script installs ``tpm`` (tmux plugin manager) into ``tmux/plugins``.
 Then reload ``.tmux.conf`` (``bind + shift + I`` in tmux) and the plugins specified in ``.tmux.conf`` will be installed.
 
+
+[brew]:https://brew.sh/index
+[fisher]:https://github.com/jorgebucaran/fisher
