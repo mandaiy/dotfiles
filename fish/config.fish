@@ -45,7 +45,7 @@ if status is-interactive
     alias cd-gitroot="cd (git rev-parse --show-toplevel)"
 
     # bindings
-    bind \cj 'fzf_z'
+    bind \ez 'fzf_z'
     bind \e\ct 'fzf_bazel'
     bind \e\cd 'fzf_docker'
     bind \e\cb 'fzf_git_branch'
