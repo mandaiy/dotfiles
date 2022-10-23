@@ -26,7 +26,7 @@ if status is-interactive
 
     if test -z "$GOPATH"
         set -gx GOPATH $HOME/.go
-        set -gx PATH $GOPATH/bin $PATH
+        fish_add_path $GOPATH/bin
     end
 
     if type -q direnv
@@ -41,8 +41,10 @@ if status is-interactive
     alias docker-sha256="docker inspect --format='{{index .RepoDigests 0}}'"
     alias docker-exited="docker ps --filter \"status=exited\""
 
-    alias _f=_fzf_wrapper
     alias cd-gitroot="cd (git rev-parse --show-toplevel)"
+    alias git-current-branch="git rev-parse --abbrev-ref HEAD"
+
+    alias _f=_fzf_wrapper
 
     # bindings
     bind \ez 'fzf_z'
