@@ -38,6 +38,9 @@ if status is-interactive
         rbenv init - fish | source
     end
 
+    alias nvimdiff="nvim -d"
+    alias awslocal="AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy aws --endpoint-url=http://localhost:4566"
+
     alias docker-sha256="docker inspect --format='{{index .RepoDigests 0}}'"
     alias docker-exited="docker ps --filter \"status=exited\""
 
