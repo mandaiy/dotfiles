@@ -8,4 +8,3 @@ function fzf_z --description "fzf for z"
 
     commandline --function repaint
 end
-

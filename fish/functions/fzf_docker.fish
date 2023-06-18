@@ -14,10 +14,10 @@ function fzf_docker --description "fzf for docker completion"
 
     else if builtin string match -r '^docker(run|push)' $args > /dev/null 2>&1
         set image (docker images --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.ID}}\t{{.CreatedSince}}" | \
-            _fzf_wrapper --header-lines=1 | awk '{ print $1 }' 
+            _fzf_wrapper --header-lines=1 | awk '{ print $1 }'
         )
         commandline --insert $image
-    
+
     else if builtin string match -r '^docker(rmi)' $args > /dev/null 2>&1
         set images (docker images --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.ID}}\t{{.CreatedSince}}" | \
             _fzf_wrapper --header-lines=1 --multi | awk '{ print $1 }' | builtin string join ' '
