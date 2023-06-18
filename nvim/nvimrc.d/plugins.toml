@@ -182,4 +182,3 @@ hook_add = '''
         autocmd TextYankPost * if v:event.operator ==# 'y' | call SendViaOSC52(getreg(v:event.regname)) | endif
     augroup END
 '''
-

@@ -9,4 +9,3 @@ then
 else
 	command ssh $@
 fi
-

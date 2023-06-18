@@ -84,4 +84,3 @@ set -l config_local $XDG_CONFIG_HOME/fish/config.local.fish
 if [ -e $config_local ]
     source $config_local
 end
-
