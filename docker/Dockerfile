@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1.2
-FROM linuxbrew/brew:latest
+FROM homebrew/brew@sha256:36ea609c1bbc4e3ba1255977ec2c0d05a5768b3fa3a609c1dcd0325a2e89bf8e
 ARG DEBIAN_FRONTEND=noninteractive
 
+USER root
 RUN apt-get update \
     && \
     apt-get install -y \
@@ -18,16 +19,12 @@ RUN apt-get update \
     rm -f /var/cache/ldconfig/aux-cache && \
     rm -f /var/cache/apt/pkgcache.bin
 
-RUN useradd -u 1001 -ms /bin/bash builder \
-    && \
-    groupadd -g 998 robots \
-    && \
-    mkdir -p /home/builder/.cache /home/builder/.local && \
-    chown -R builder:robots /home/builder/.cache && \
-    chown -R builder:robots /home/builder/.local && \
-    echo 'builder ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-RUN chown -R builder:robots /home/linuxbrew/.linuxbrew
-
-USER builder:robots
-RUN brew update
+USER linuxbrew
+RUN brew install \
+    bat \
+    fd \
+    fish \
+    fzf \
+    neovim \
+    ripgrep \
+    tmux

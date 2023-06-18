@@ -1,0 +1,15 @@
+name: ci
+
+on:
+  pull_request:
+    branches
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    container:
+      image: mandaiy/dotfiles:linux-amd64
+    steps:
+      - uses: actions/checkout@v3
+      - name: Smoke test
+        run: ./init
