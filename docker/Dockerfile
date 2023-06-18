@@ -19,6 +19,12 @@ RUN apt-get update \
     rm -f /var/cache/ldconfig/aux-cache && \
     rm -f /var/cache/apt/pkgcache.bin
 
+# We may want to set uid/gid as 1001 for the following issue.
+# https://github.com/actions/checkout/issues/956
+RUN usermod -u 1001 linuxbrew && \
+    groupmod -g 1001 linuxbrew && \
+    chown -R 1001:1001 /home/linuxbrew
+
 USER linuxbrew
 RUN brew install \
     bat \
