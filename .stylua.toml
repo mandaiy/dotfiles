@@ -1,0 +1,5 @@
+column_width = 120
+
+# https://github.com/luarocks/lua-style-guide/blob/master/README.md#indentation-and-formatting
+indent_type = "Spaces"
+indent_width = 3
