@@ -159,6 +159,7 @@ return require("packer").startup({
          end,
       })
 
+      -- An extension of Telescope.
       use({
          "nvim-telescope/telescope-file-browser.nvim",
          requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
@@ -188,6 +189,7 @@ return require("packer").startup({
          end,
       })
 
+      -- A better syntax highlighter.
       use({
          "nvim-treesitter/nvim-treesitter",
          run = ":TSUpdate",
@@ -214,12 +216,6 @@ return require("packer").startup({
       -- A comment-out plugin.
       use("tpope/vim-commentary")
 
-      -- A solid language pack (syntax, indent, etc).
-      -- use("sheerun/vim-polyglot")
-
-      -- An icon bundle.
-      -- use("nvim-tree/nvim-web-devicons")
-
       -- Highlights a word under the cursor.
       use("RRethy/vim-illuminate")
 
@@ -228,26 +224,27 @@ return require("packer").startup({
          "kylechui/nvim-surround",
          tag = "*", -- Use for stability; omit to use `main` branch for the latest features
          config = function()
-            require("nvim-surround").setup({
-               -- Configuration here, or leave empty to use defaults
-            })
+            require("nvim-surround").setup()
          end,
       })
 
-      use("sindrets/diffview.nvim")
-
+      -- A pretty list of diagnostics, quickfix list, LSP references, etc.
       use({
          "folke/trouble.nvim",
          setup = function()
-            vim.keymap.set("n", "<Leader>xx", ":TroubleToggle<cr>", { silent = true })
-            vim.keymap.set("n", "<Leader>xw", ":TroubleToggle workspace_diagnostics<cr>", { silent = true })
-            vim.keymap.set("n", "<Leader>xd", ":TroubleToggle document_diagnostics<cr>", { silent = true })
-            vim.keymap.set("n", "<Leader>xl", ":TroubleToggle loclist<cr>", { silent = true })
-            vim.keymap.set("n", "<Leader>xq", ":TroubleToggle quickfix<cr>", { silent = true })
-            vim.keymap.set("n", "<Leader>xr", ":TroubleToggle lsp_references<cr>", { silent = true })
+            vim.keymap.set("n", "<Leader>xx", ":TroubleToggle<CR>", { silent = true })
+            vim.keymap.set("n", "<Leader>xw", ":TroubleToggle workspace_diagnostics<CR>", { silent = true })
+            vim.keymap.set("n", "<Leader>xd", ":TroubleToggle document_diagnostics<CR>", { silent = true })
+            vim.keymap.set("n", "<Leader>xl", ":TroubleToggle loclist<CR>", { silent = true })
+            vim.keymap.set("n", "<Leader>xq", ":TroubleToggle quickfix<CR>", { silent = true })
+            vim.keymap.set("n", "<Leader>xr", ":TroubleToggle lsp_references<CR>", { silent = true })
          end,
       })
 
+      use { 'NeogitOrg/neogit', requires = 'nvim-lua/plenary.nvim' }
+      use("sindrets/diffview.nvim")
+
+     -- An extension for Git diff and operations.
       use({
          "lewis6991/gitsigns.nvim",
          config = function()
@@ -337,18 +334,19 @@ return require("packer").startup({
             vim.g.spelunker_disable_acronym_checking = 1
             vim.g.spelunker_disable_backquoted_checking = 1
             vim.g.spelunker_white_list_for_user = {
+               "args",
                "augroup",
                "autocmd",
-               "colorscheme",
-               "args",
                "backend",
+               "colorscheme",
                "coord",
+               "fuga",
+               "hoge",
                "okta",
+               "piyo",
                "terraform",
                "unmarshal",
-               "hoge",
-               "fuga",
-               "piyo",
+               "quickfix",
             }
 
             -- After enabling a colorscheme these highlight groups are cleared.
