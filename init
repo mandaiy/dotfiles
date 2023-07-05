@@ -180,7 +180,6 @@ def process() -> None:
         SymlinkToConfig("fish/functions/fzf_z.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fzf_bazel.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/z_cleanup.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/brew_cleanup.fish", exist_ok=True),
     ]
 
     for install_item in install_items:

@@ -178,8 +178,6 @@ vim.keymap.set("", "ZQ", "<Nop>", { silent = true })
 vim.keymap.set("n", "<C-l>", ":nohlsearch<CR>", { silent = true })
 
 -- Tabs
-vim.keymap.set("n", "<Tab>", "gt", { silent = true })
-vim.keymap.set("n", "<S-Tab>", "gT", { silent = true })
 vim.keymap.set("n", "<S-t>", ":tabnew<CR>", { silent = true })
 
 ---- Vmap for maintain Visual Mode after shifting > and <

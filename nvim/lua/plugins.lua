@@ -267,6 +267,14 @@ return require("packer").startup({
          end,
       })
 
+      -- A markdown reader extension.
+      use({
+         "ellisonleao/glow.nvim",
+         config = function()
+            require("glow").setup()
+         end,
+      })
+
       -- Opens the repository page in a web browser.
       use({
          "almo7aya/openingh.nvim",
@@ -338,6 +346,7 @@ return require("packer").startup({
                "backend",
                "colorscheme",
                "coord",
+               "estie",
                "fuga",
                "hoge",
                "okta",
@@ -350,12 +359,12 @@ return require("packer").startup({
             -- After enabling a colorscheme these highlight groups are cleared.
             -- This augroup explicitly enables highlight groups.
             vim.cmd([[
-            augroup spelunker-colorscheme
-               autocmd ColorScheme *
-               \ highlight SpelunkerSpellBad cterm=underline ctermfg=247 gui=underline guifg=#9e9e9e |
-               \ highlight SpelunkerComplexOrCompoundWord cterm=underline ctermfg=NONE gui=underline guifg=NONE
-            augroup END
-        ]])
+               augroup spelunker-colorscheme
+                  autocmd ColorScheme *
+                  \ highlight SpelunkerSpellBad cterm=underline ctermfg=247 gui=underline guifg=#9e9e9e |
+                  \ highlight SpelunkerComplexOrCompoundWord cterm=underline ctermfg=NONE gui=underline guifg=NONE
+               augroup END
+            ]])
          end,
       })
 
