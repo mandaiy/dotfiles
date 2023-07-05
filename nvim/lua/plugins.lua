@@ -271,7 +271,7 @@ return require("packer").startup({
       use({
          "almo7aya/openingh.nvim",
          setup = function()
-            vim.keymap.set("n", "<Leader>no", ":OpenInGHFileLines")
+            vim.keymap.set("n", "<Leader>no", ":OpenInGHFileLines<CR>")
          end,
       })
 
@@ -357,6 +357,13 @@ return require("packer").startup({
             augroup END
         ]])
          end,
+      })
+
+      -- Python black support.
+      use({
+         "psf/black",
+         branch = "stable",
+         ft = "python",
       })
 
       -- Automatically set up your configuration after cloning packer.nvim

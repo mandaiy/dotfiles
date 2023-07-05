@@ -220,6 +220,14 @@ vim.keymap.set("n", "<Leader>vs", function()
    return ":vsplit " .. vim.fn.expand("%:p:h") .. "/"
 end, { expr = true })
 
+-- Disable python2 support.
+vim.g.loaded_python_provider = 0
+
+if vim.fn.isdirectory(vim.env.XDG_CONFIG_HOME .. "/nvim/venv/") then
+   vim.g.python3_host_prog = vim.env.XDG_CONFIG_HOME .. "/nvim/venv/bin/python"
+   vim.g.black_virtualenv = vim.env.XDG_CONFIG_HOME .. "/nvim/venv"
+end
+
 require("plugins")
 vim.keymap.set("n", "<Leader>ps", ":PackerSync<CR>", { silent = true })
 vim.keymap.set("n", "<Leader>pS", ":PackerStatus<CR>", { silent = true })
