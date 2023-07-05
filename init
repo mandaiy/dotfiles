@@ -163,8 +163,8 @@ def process() -> None:
         # git
         SymlinkToConfig("git/ignore", exist_ok=True),
         # nvim
-        SymlinkToConfig("nvim/init.vim", exist_ok=True),
-        SymlinkToConfig("nvim/nvimrc.d", exist_ok=True),
+        SymlinkToConfig("nvim/init.lua", exist_ok=True),
+        SymlinkToConfig("nvim/lua", exist_ok=True),
         # tmux
         SymlinkToConfig("tmux/tmux.conf", exist_ok=True),
         GitClone(
