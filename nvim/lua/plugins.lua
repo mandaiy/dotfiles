@@ -157,6 +157,13 @@ return require("packer").startup({
             vim.keymap.set("n", "<Leader>fgd", ":Telescope git_bcommits<CR>", { silent = true })
             vim.keymap.set("n", "<Leader>fgb", ":Telescope git_branches<CR>", { silent = true })
          end,
+         config = function()
+            require("telescope").setup({
+               defaults = {
+                  file_ignore_patterns = { ".git/*" },
+               },
+            })
+         end,
       })
 
       -- An extension of Telescope.
@@ -241,10 +248,35 @@ return require("packer").startup({
          end,
       })
 
-      use { 'NeogitOrg/neogit', requires = 'nvim-lua/plenary.nvim' }
-      use("sindrets/diffview.nvim")
+      -- A prettier git-diff.
+      use({
+         "sindrets/diffview.nvim",
+         setup = function()
+            vim.keymap.set("n", "<Leader>da", ":DiffviewOpen<CR>", { silent = true })
+            vim.keymap.set("n", "<Leader>dr", ":DiffviewRefresh<CR>", { silent = true })
+            vim.keymap.set("n", "<Leader>dd", ":DiffviewFileHistory %<CR>", { silent = true })
+         end,
+      })
 
-     -- An extension for Git diff and operations.
+      -- A Git extension.
+      use({
+         "NeogitOrg/neogit",
+         requires = "nvim-lua/plenary.nvim",
+         setup = function()
+            vim.keymap.set("n", "<Leader>ng", ":Neogit<CR>", { silent = true })
+         end,
+      })
+
+      -- Opens the repository page in a web browser.
+      use({
+         "almo7aya/openingh.nvim",
+         setup = function()
+            vim.keymap.set("n", "<Leader>no", ":OpenInGHFileLines")
+         end,
+      })
+
+      -- An extension for Git diff and operations.
+      -- This shows git-diff on the screen gutter area, previews hunks, deleted lines, and blames.
       use({
          "lewis6991/gitsigns.nvim",
          config = function()
@@ -274,46 +306,12 @@ return require("packer").startup({
                      return "<Ignore>"
                   end, { expr = true, buffer = bufnr, silent = true })
 
-                  -- Actions
-                  vim.keymap.set("n", "<Leader>hs", gitsigns.stage_hunk, { buffer = bufnr, silent = true })
-                  vim.keymap.set("n", "<Leader>hr", gitsigns.reset_hunk, { buffer = bufnr, silent = true })
-                  vim.keymap.set("n", "<Leader>hS", gitsigns.stage_buffer, { buffer = bufnr, silent = true })
-                  vim.keymap.set("n", "<Leader>hR", gitsigns.reset_buffer, { buffer = bufnr, silent = true })
-                  vim.keymap.set("v", "<Leader>hs", function()
-                     gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
-                  end, { buffer = bufnr, silent = true })
-                  vim.keymap.set("v", "<Leader>hr", function()
-                     gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
-                  end, { buffer = bufnr, silent = true })
+                  vim.keymap.set("n", "<Leader>np", gitsigns.preview_hunk, { buffer = bufnr, silent = true })
+                  vim.keymap.set("n", "<Leader>nd", gitsigns.toggle_deleted, { buffer = bufnr, silent = true })
 
-                  vim.keymap.set("n", "<Leader>hu", gitsigns.undo_stage_hunk, { buffer = bufnr, silent = true })
-
-                  vim.keymap.set("n", "<Leader>hp", gitsigns.preview_hunk, { buffer = bufnr, silent = true })
-                  vim.keymap.set("n", "<Leader>td", gitsigns.toggle_deleted, { buffer = bufnr, silent = true })
-
-                  vim.keymap.set("n", "<Leader>hb", function()
+                  vim.keymap.set("n", "<Leader>nb", function()
                      gitsigns.blame_line({ full = true })
                   end, { buffer = bufnr, silent = true })
-
-                  vim.keymap.set(
-                     "n",
-                     "<Leader>tb",
-                     gitsigns.toggle_current_line_blame,
-                     { buffer = bufnr, silent = true }
-                  )
-
-                  vim.keymap.set("n", "<Leader>hd", gitsigns.diffthis, { buffer = bufnr, silent = true })
-                  vim.keymap.set("n", "<Leader>hD", function()
-                     gitsigns.diffthis("~")
-                  end, { expr = true, buffer = bufnr, silent = true })
-
-                  -- Text object
-                  vim.keymap.set(
-                     { "o", "x" },
-                     "ih",
-                     ":<C-U>Gitsigns select_hunk<CR>",
-                     { buffer = bufnr, silent = true }
-                  )
 
                   vim.keymap.set("n", "<Leader>xh", function()
                      gitsigns.setqflist("all")
