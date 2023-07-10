@@ -160,7 +160,7 @@ return require("packer").startup({
          config = function()
             require("telescope").setup({
                defaults = {
-                  file_ignore_patterns = { ".git/*" },
+                  file_ignore_patterns = { "^.git/" },
                },
             })
          end,
