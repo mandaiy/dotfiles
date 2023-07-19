@@ -173,12 +173,13 @@ def process() -> None:
         # fish
         SymlinkToConfig("fish/config.fish", exist_ok=True),
         SymlinkToConfig("fish/fish_plugins", exist_ok=True),
+        SymlinkToConfig("fish/functions/brew-upgrade.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fish_prompt.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fish_right_prompt.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/fzf_git_branch.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/fzf_docker.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/fzf_z.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fzf_bazel.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf_docker.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf_git_branch.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf_z.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/z_cleanup.fish", exist_ok=True),
     ]
 
