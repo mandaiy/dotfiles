@@ -50,13 +50,6 @@ return require("packer").startup({
                },
             }
 
-            -- coq settings. This has to precede require('coq').
-            vim.g.coq_settings = {
-               ["auto_start"] = true,
-               ["keymap.manual_complete"] = "<Leader>.",
-               ["xdg"] = true,
-            }
-
             -- Update opts if coq is available.
             local ok, coq = pcall(require, "coq")
             if not ok then
@@ -125,6 +118,14 @@ return require("packer").startup({
       use({
          "ms-jpq/coq_nvim",
          branch = "coq",
+         config = function()
+            -- coq settings. This has to precede require('coq').
+            vim.g.coq_settings = {
+               ["auto_start"] = true,
+               ["keymap.manual_complete"] = "<C-C>",
+               ["xdg"] = true,
+            }
+         end,
       })
 
       -- Bundled data for coq_nvim.
@@ -141,6 +142,16 @@ return require("packer").startup({
 
             require("aerial").setup()
          end,
+      })
+
+      -- Github copilot.
+      use({
+         "github/copilot.vim",
+         config = function()
+            vim.keymap.set("i", "<C-J>", "copilot#Accept('<CR>')", { silent = true, noremap = true, expr = true, replace_keycodes = false })
+            vim.g.copilot_no_tab_map = true
+            vim.g.copilot_filetypes = {python = true}
+         end
       })
 
       -- A fuzzy finder.
@@ -265,6 +276,9 @@ return require("packer").startup({
          setup = function()
             vim.keymap.set("n", "<Leader>ng", ":Neogit<CR>", { silent = true })
          end,
+         config = function()
+            require("neogit").setup()
+         end
       })
 
       -- A markdown reader extension.
