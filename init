@@ -176,11 +176,11 @@ def process() -> None:
         SymlinkToConfig("fish/functions/brew-upgrade.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fish_prompt.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fish_right_prompt.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/fzf_bazel.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/fzf_docker.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/fzf_git_branch.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/fzf_z.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/z_cleanup.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf-docker.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf-git-branch.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/fzf-z.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/org-note.fish", exist_ok=True),
+        SymlinkToConfig("fish/functions/z-cleanup.fish", exist_ok=True),
     ]
 
     for install_item in install_items:

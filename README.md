@@ -57,3 +57,11 @@ Then reload ``.tmux.conf`` (``bind + shift + I`` in tmux) and the plugins specif
 
 [brew]:https://brew.sh/index
 [fisher]:https://github.com/jorgebucaran/fisher
+
+## Environment variables
+
+This repository assumes that the following environment variables are set.
+
+| Environemnt variable | Note |
+|----------------------|------|
+| MANDAIY_ORG_NOTE_DIR | Directory where org-note repository resides |

@@ -50,10 +50,8 @@ if status is-interactive
     alias _f=_fzf_wrapper
 
     # bindings
-    bind \ez 'fzf_z'
-    bind \e\ct 'fzf_bazel'
-    bind \e\cd 'fzf_docker'
-    bind \e\cb 'fzf_git_branch'
+    bind \ez 'fzf-z'
+    bind \e\cb 'fzf-git-branch'
 
     # Fish git prompt
     set __fish_git_prompt_showdirtystate 'yes'
@@ -76,7 +74,7 @@ if status is-interactive
     set -gx VIRTUAL_ENV_DISABLE_PROMPT true
 
     if not test -z "$Z_DATA"
-        z_cleanup
+        z-cleanup
     end
 end
 
