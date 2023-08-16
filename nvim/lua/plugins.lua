@@ -148,11 +148,71 @@ return require("packer").startup({
       use({
          "github/copilot.vim",
          config = function()
-            vim.keymap.set("i", "<C-J>", "copilot#Accept('<CR>')", { silent = true, noremap = true, expr = true, replace_keycodes = false })
+            vim.keymap.set(
+               "i",
+               "<C-J>",
+               "copilot#Accept('<CR>')",
+               { silent = true, noremap = true, expr = true, replace_keycodes = false }
+            )
             vim.g.copilot_no_tab_map = true
-            vim.g.copilot_filetypes = {python = true}
-         end
+            vim.g.copilot_filetypes = { python = true }
+         end,
       })
+
+      -- A plugin for embedding Neovim in a browser.
+      use({
+         "glacambre/firenvim",
+         run = function()
+            vim.fn["firenvim#install"](0)
+         end,
+         config = function()
+            vim.api.nvim_create_autocmd("UIEnter", {
+               callback = function(_)
+                  local client = vim.api.nvim_get_chan_info(vim.v.event.chan).client
+                  if client ~= nil and client.name == "Firenvim" then
+                     vim.o.laststatus = 0
+                     vim.opt.guifont = "Monaco:h13"
+                     vim.opt.guifontwide = "Monaco:h13"
+                  end
+               end,
+            })
+         end,
+         setup = function()
+            -- Disable firenvim by default. This makes us explicitly enable it.
+            vim.g.firenvim_config = {
+               localSettings = {
+                  [".*"] = {
+                     takeover = "never",
+                  },
+               },
+            }
+         end,
+      })
+
+      -- A plugin for org-mode.
+      use({
+         "nvim-neorg/neorg",
+         run = ":Neorg sync-parsers",
+         after = "nvim-treesitter", -- You may want to specify Telescope here as well
+         config = function()
+            require("neorg").setup({
+               load = {
+                  ["core.defaults"] = {}, -- Loads default behaviour
+                  ["core.concealer"] = {}, -- Adds pretty icons to your documents
+                  ["core.dirman"] = { -- Manages Neorg workspaces
+                     config = {
+                        workspaces = {
+                           notes = vim.env.MANDAIY_ORG_NOTE_DIR,
+                        },
+                     },
+                  },
+               },
+            })
+         end,
+      })
+
+      -- A plugin for fancy fonts.
+      use("ryanoasis/vim-devicons")
 
       -- A fuzzy finder.
       use({
@@ -277,8 +337,8 @@ return require("packer").startup({
             vim.keymap.set("n", "<Leader>ng", ":Neogit<CR>", { silent = true })
          end,
          config = function()
-            require("neogit").setup()
-         end
+            require("neogit").setup({})
+         end,
       })
 
       -- A markdown reader extension.
@@ -363,6 +423,7 @@ return require("packer").startup({
                "estie",
                "fuga",
                "hoge",
+               "jupyter",
                "okta",
                "piyo",
                "terraform",
