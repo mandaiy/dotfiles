@@ -1,4 +1,4 @@
-function z_cleanup --description "Clean up z data"
+function z-cleanup --description "Clean up z data"
     # Because POSIX sed does not have -i option,
     # here we use tmpfile and redirect to update the file.
     set -l tmp_file (mktemp)

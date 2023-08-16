@@ -1,4 +1,4 @@
-function fzf_git_branch --description "fzf for git branch"
+function fzf-git-branch --description "fzf for git branch"
     set fzf_arguments --multi --ansi $fzf_dir_opts
     set branches (git branch --sort=authordate | _fzf_wrapper $fzf_arguments)
 

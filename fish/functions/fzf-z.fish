@@ -1,4 +1,4 @@
-function fzf_z --description "fzf for z"
+function fzf-z --description "fzf for z"
     set fzf_arguments --ansi $fzf_dir_opts
     set chosen (z -l | _fzf_wrapper $fzf_arguments)
 

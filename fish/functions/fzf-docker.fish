@@ -1,4 +1,4 @@
-function fzf_docker --description "fzf for docker completion"
+function fzf-docker --description "fzf for docker completion"
     set -l args (commandline | builtin string trim | builtin string replace " " "")
 
     if builtin string match -r '^docker$' $args > /dev/null 2>&1
