@@ -179,7 +179,6 @@ def process() -> None:
         SymlinkToConfig("fish/functions/fzf-docker.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fzf-git-branch.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/fzf-z.fish", exist_ok=True),
-        SymlinkToConfig("fish/functions/org-note.fish", exist_ok=True),
         SymlinkToConfig("fish/functions/z-cleanup.fish", exist_ok=True),
     ]
 
