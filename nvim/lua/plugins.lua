@@ -254,6 +254,16 @@ return require("packer").startup({
       use({
          "nvim-treesitter/nvim-treesitter",
          run = ":TSUpdate",
+         config = function()
+            require("nvim-treesitter.configs").setup({
+               ensure_installed = { "python" },
+               sync_install = false,
+               auto_install = true,
+               highlight = {
+                  enable = true,
+               },
+            })
+         end,
       })
 
       -- Handles extra whitespaces.
@@ -403,6 +413,8 @@ return require("packer").startup({
                "backend",
                "colorscheme",
                "coord",
+               "datetime",
+               "deduplicate",
                "estie",
                "fuga",
                "hoge",
@@ -412,6 +424,7 @@ return require("packer").startup({
                "terraform",
                "unmarshal",
                "quickfix",
+               "usecase",
             }
 
             -- After enabling a colorscheme these highlight groups are cleared.
