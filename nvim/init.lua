@@ -10,17 +10,17 @@ vim.cmd([[highlight LineNr ctermbg=NONE]])
 vim.cmd([[highlight CursorLineNr ctermbg=NONE]])
 
 -- Syntax highlight syncing from start unless 200 lines.
-vim.api.nvim_create_autocmd("BufEnter", {
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
    pattern = { "*" },
    command = ":syntax sync maxlines=200",
 })
 -- Don't auto commenting new lines
-vim.api.nvim_create_autocmd("BufEnter", {
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
    pattern = "*",
    command = "set fo-=c fo-=r fo-=o",
 })
 -- Remembers the cursor's position.
-vim.api.nvim_create_autocmd("BufReadPost", {
+vim.api.nvim_create_autocmd({ "BufReadPost" }, {
    pattern = { "*" },
    callback = function()
       if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
@@ -30,25 +30,25 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 })
 
 -- filetype settings for specific files
-vim.api.nvim_create_autocmd("BufNewFile,BufRead", {
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
    pattern = { "CMakeLists.txt" },
    command = [[setlocal filetype=cmake]],
 })
-vim.api.nvim_create_autocmd("BufNewFile,BufRead", {
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
    pattern = { "*.rb,*.rbw,*.gemspec,Vagrantfile" },
    command = [[setlocal filetype=ruby]],
 })
 
 -- FileType specific settings
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "go" },
    command = [[setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4]],
 })
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "lua" },
    command = [[setlocal expandtab shiftwidth=3 tabstop=3 softtabstop=3]],
 })
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "python" },
    command = [[
         setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4 colorcolumn=79
@@ -56,7 +56,7 @@ vim.api.nvim_create_autocmd("FileType", {
         setlocal cinwords=if,elif,else,for,while,try,except,finally,def,class,with
     ]],
 })
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "ruby" },
    callback = function()
       vim.cmd([[setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2]])
@@ -65,17 +65,17 @@ vim.api.nvim_create_autocmd("FileType", {
       vim.g.rubycomplete_rails = 1
    end,
 })
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "sh,zsh" },
    command = [[setlocal noexpandtab]],
 })
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "tex" },
    callback = function()
       vim.g.tex_flavor = "latex"
    end,
 })
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "yaml" },
    command = [[setlocal shiftwidth=2 tabstop=2 softtabstop=2]],
 })
