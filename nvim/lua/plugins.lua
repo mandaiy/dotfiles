@@ -90,6 +90,11 @@ return require("packer").startup({
                lspconfig.gopls.setup(opts)
             end
 
+            if vim.fn.executable("tsserver") ~= 0 then
+               print("LspSetup: setting up for tsserver")
+               lspconfig.tsserver.setup(opts)
+            end
+
             if vim.fn.executable("lua-language-server") ~= 0 then
                print("LspSetup: setting up for lua-language-server")
                opts["settings"] = {
