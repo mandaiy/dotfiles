@@ -76,6 +76,12 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
    end,
 })
 vim.api.nvim_create_autocmd({ "FileType" }, {
+   pattern = { "typescript,typescriptreact" },
+   command = [[
+        setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2 colorcolumn=79
+    ]],
+})
+vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "yaml" },
    command = [[setlocal shiftwidth=2 tabstop=2 softtabstop=2]],
 })
