@@ -232,6 +232,18 @@ if vim.fn.isdirectory(vim.env.XDG_CONFIG_HOME .. "/nvim/venv/") then
    vim.g.black_virtualenv = vim.env.XDG_CONFIG_HOME .. "/nvim/venv"
 end
 
-require("plugins")
-vim.keymap.set("n", "<Leader>ps", ":PackerSync<CR>", { silent = true })
-vim.keymap.set("n", "<Leader>pS", ":PackerStatus<CR>", { silent = true })
+-- lazy bootstrap
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+   vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "https://github.com/folke/lazy.nvim.git",
+      "--branch=stable", -- latest stable release
+      lazypath,
+   })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup("plugins")
