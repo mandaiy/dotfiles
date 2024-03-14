@@ -9,6 +9,12 @@ return {
       end,
    },
 
+   -- Lua library for nvim.
+   { "nvim-lua/plenary.nvim" },
+
+   -- A plugin for fancy fonts.
+   { "nvim-tree/nvim-web-devicons", lazy = true },
+
    -- Language Server config.
    {
       "neovim/nvim-lspconfig",
@@ -145,8 +151,6 @@ return {
       end,
    },
 
-   -- Lua library for nvim.
-   { "nvim-lua/plenary.nvim" },
    -- Github copilot.
    {
       "github/copilot.vim",
@@ -161,10 +165,6 @@ return {
          vim.g.copilot_filetypes = { python = true }
       end,
    },
-   -- A plugin for fancy fonts.
-   { "ryanoasis/vim-devicons" },
-
-   { "nvim-tree/nvim-web-devicons", lazy = true },
 
    -- A fuzzy finder.
    {
@@ -242,9 +242,9 @@ return {
    {
       "sindrets/diffview.nvim",
       init = function()
-         vim.keymap.set("n", "<Leader>da", ":DiffviewOpen<CR>", { silent = true })
+         vim.keymap.set("n", "<Leader>do", ":DiffviewOpen<CR>", { silent = true })
          vim.keymap.set("n", "<Leader>dr", ":DiffviewRefresh<CR>", { silent = true })
-         vim.keymap.set("n", "<Leader>dd", ":DiffviewFileHistory %<CR>", { silent = true })
+         vim.keymap.set("n", "<Leader>df", ":DiffviewFileHistory %<CR>", { silent = true })
       end,
    },
 
@@ -253,8 +253,9 @@ return {
       "NeogitOrg/neogit",
       dependencies = { "nvim-lua/plenary.nvim" },
       init = function()
-         vim.keymap.set("n", "<Leader>ng", ":Neogit<CR>", { silent = true })
+         vim.keymap.set("n", "<Leader>dd", ":Neogit<CR>", { silent = true })
       end,
+
       config = function()
          require("neogit").setup({})
       end,
@@ -291,14 +292,14 @@ return {
                   return "<Ignore>"
                end, { expr = true, buffer = bufnr, silent = true })
 
-               vim.keymap.set("n", "<Leader>np", gitsigns.preview_hunk, { buffer = bufnr, silent = true })
-               vim.keymap.set("n", "<Leader>nd", gitsigns.toggle_deleted, { buffer = bufnr, silent = true })
+               vim.keymap.set("n", "<Leader>dp", gitsigns.preview_hunk, { buffer = bufnr, silent = true })
+               vim.keymap.set("n", "<Leader>dt", gitsigns.toggle_deleted, { buffer = bufnr, silent = true })
 
-               vim.keymap.set("n", "<Leader>nb", function()
+               vim.keymap.set("n", "<Leader>db", function()
                   gitsigns.blame_line({ full = true })
                end, { buffer = bufnr, silent = true })
 
-               vim.keymap.set("n", "<Leader>xh", function()
+               vim.keymap.set("n", "<Leader>dq", function()
                   gitsigns.setqflist("all")
                end, { expr = true, buffer = bufnr, silent = true })
             end,
