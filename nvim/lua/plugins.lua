@@ -224,7 +224,7 @@ return {
       init = function()
          -- Remove trailing spaces on save.
          vim.api.nvim_create_autocmd("BufWrite", {
-            pattern = { "*" },
+            pattern = { "*[^{md}]" },
             command = ":StripWhitespace",
          })
       end,
