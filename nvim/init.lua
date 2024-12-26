@@ -130,6 +130,10 @@ vim.opt.wildmode = "list:full" -- Command completion
 vim.opt.wrap = false
 vim.opt.writebackup = false
 
+vim.opt.termguicolors = true
+vim.opt.winblend = 0
+vim.opt.pumblend = 0
+
 -- %<: truncation position
 -- %n: buffer number, %m: modified?
 -- %r: RO?, %h: help buffer?
@@ -226,13 +230,21 @@ end, { expr = true })
 
 -- Enable editorconfig
 vim.g.editorconfig = true
+
 -- Disable python2 support.
 vim.g.loaded_python_provider = 0
 
-if vim.fn.isdirectory(vim.env.XDG_CONFIG_HOME .. "/nvim/venv/") then
-   vim.g.python3_host_prog = vim.env.XDG_CONFIG_HOME .. "/nvim/venv/bin/python"
-   vim.g.black_virtualenv = vim.env.XDG_CONFIG_HOME .. "/nvim/venv"
+local nvim_python_path = vim.loop.os_getenv("NVIM_PYTHON_PATH")
+local XDG_CONFIG_HOME = vim.loop.os_getenv("XDG_CONFIG_HOME") or ""
+if nvim_python_path ~= nil then
+   vim.g.python3_host_prog = nvim_python_path
+elseif vim.fn.isdirectory(XDG_CONFIG_HOME .. "/nvim/venv/") then
+   vim.g.python3_host_prog = XDG_CONFIG_HOME .. "/nvim/venv/bin/python"
 end
+
+-- Example for configuring Neovim to load user-installed installed Lua rocks:
+package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua;"
+package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua;"
 
 -- lazy bootstrap
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

@@ -15,6 +15,7 @@
 | neovim            |      |
 | ripgrep           |      |
 | tmux              |      |
+| [macOS Input Source Manager][macism] | |
 
 
 ```
@@ -57,11 +58,10 @@ Then reload ``.tmux.conf`` (``bind + shift + I`` in tmux) and the plugins specif
 
 [brew]:https://brew.sh/index
 [fisher]:https://github.com/jorgebucaran/fisher
+[macism]:https://github.com/laishulu/macism
 
-## Environment variables
+### Environment Variables
 
-This repository assumes that the following environment variables are set.
-
-| Environemnt variable | Note |
-|----------------------|------|
-| MANDAIY_ORG_NOTE_DIR | Directory where org-note repository resides |
+| Variable | Description |
+|----------|-------------|
+| `NVIM_PYTHON_PATH` | Path to Python interpreter to be used in neovim |
