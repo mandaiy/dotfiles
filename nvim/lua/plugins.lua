@@ -525,29 +525,67 @@ return {
          require("nvim-treesitter.configs").setup(opts)
       end,
    },
-
-   -- Show context of the current function
-   {
-      "nvim-treesitter/nvim-treesitter-context",
-      event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-      enabled = true,
-      opts = { mode = "cursor", max_lines = 3 },
-      keys = {
-         {
-            "<leader>ut",
-            function()
-               local tsc = require("treesitter-context")
-               tsc.toggle()
-            end,
-            desc = "Toggle Treesitter Context",
-         },
-      },
-   },
-
    -- Automatically add closing tags for HTML and JSX
    {
       "windwp/nvim-ts-autotag",
       event = { "BufReadPost", "BufNewFile", "BufWritePre" },
       opts = {},
+   },
+   -- Jupyter Notebook (ipynb -> py)
+   {
+      "GCBallesteros/jupytext.nvim",
+      config = true,
+      lazy = false,
+   },
+   {
+      "benlubas/molten-nvim",
+      -- version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
+      dependencies = {
+         {
+            "3rd/image.nvim",
+            opts = {
+               backend = "kitty", -- whatever backend you would like to use
+               max_width = 500,
+               max_height = 500,
+               max_height_window_percentage = math.huge,
+               max_width_window_percentage = math.huge,
+               window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
+               window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
+            },
+         },
+      },
+      build = ":UpdateRemotePlugins",
+      init = function()
+         vim.g.molten_image_provider = "image.nvim"
+      end,
+   },
+   {
+      "GCBallesteros/NotebookNavigator.nvim",
+      keys = {
+         {
+            "]h",
+            function()
+               require("notebook-navigator").move_cell("d")
+            end,
+         },
+         {
+            "[h",
+            function()
+               require("notebook-navigator").move_cell("u")
+            end,
+         },
+         { "<leader>rc", "<cmd>lua require('notebook-navigator').run_cell()<cr>" },
+         { "<leader>rm", "<cmd>lua require('notebook-navigator').run_and_move()<cr>" },
+      },
+      dependencies = {
+         "echasnovski/mini.comment",
+         "anuvyklack/hydra.nvim",
+         "benlubas/molten-nvim",
+      },
+      event = "VeryLazy",
+      config = function()
+         local nn = require("notebook-navigator")
+         nn.setup({ activate_hydra_keys = "<leader>h", repl_provider = "molten" })
+      end,
    },
 }
