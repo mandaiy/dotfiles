@@ -9,6 +9,15 @@ return {
       end,
    },
 
+   {
+      "keaising/im-select.nvim",
+      config = function()
+         require("im_select").setup({
+            default_im_select = "com.apple.keylayout.ABC",
+         })
+      end,
+   },
+
    -- Lua library for nvim.
    { "nvim-lua/plenary.nvim" },
 
@@ -89,7 +98,7 @@ return {
 
          if vim.fn.executable("tsserver") ~= 0 then
             print("LspSetup: setting up for tsserver")
-            lspconfig.tsserver.setup(opts)
+            lspconfig.ts_ls.setup(opts)
          end
 
          if vim.fn.executable("lua-language-server") ~= 0 then
@@ -169,14 +178,21 @@ return {
    -- Copilot chat.
    {
       "CopilotC-Nvim/CopilotChat.nvim",
-      branch = "canary",
+      branch = "main",
       dependencies = {
          { "github/copilot.vim" }, -- or github/copilot.vim
          { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
       },
+      build = "make tiktoken",
       opts = {
          debug = true,
+         window = {
+            layout = "float",
+         },
       },
+      init = function()
+         vim.keymap.set("n", "<Leader>cc", ":CopilotChatToggle<CR>", { silent = true })
+      end,
    },
 
    -- A fuzzy finder.
@@ -216,6 +232,22 @@ return {
             { noremap = true, silent = true }
          )
       end,
+   },
+
+   {
+      "LukasPietzschmann/telescope-tabs",
+      config = function()
+         require("telescope").load_extension("telescope-tabs")
+         require("telescope-tabs").setup({
+            vim.api.nvim_set_keymap(
+               "n",
+               "<Leader>ft",
+               ":Telescope telescope-tabs list_tabs<CR>",
+               { noremap = true, silent = true }
+            ),
+         })
+      end,
+      dependencies = { "nvim-telescope/telescope.nvim" },
    },
 
    -- Handles extra whitespaces.

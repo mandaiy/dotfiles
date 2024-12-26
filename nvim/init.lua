@@ -224,6 +224,8 @@ vim.keymap.set("n", "<Leader>vs", function()
    return ":vsplit " .. vim.fn.expand("%:p:h") .. "/"
 end, { expr = true })
 
+-- Enable editorconfig
+vim.g.editorconfig = true
 -- Disable python2 support.
 vim.g.loaded_python_provider = 0
 
