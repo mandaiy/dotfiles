@@ -159,7 +159,7 @@ def process() -> None:
 
     install_items = [
         # alacritty
-        SymlinkToConfig("alacritty/alacritty.yml", exist_ok=True),
+        SymlinkToConfig("alacritty/alacritty.toml", exist_ok=True),
         # git
         SymlinkToConfig("git/ignore", exist_ok=True),
         # nvim
