@@ -65,3 +65,12 @@ Then reload ``.tmux.conf`` (``bind + shift + I`` in tmux) and the plugins specif
 | Variable | Description |
 |----------|-------------|
 | `NVIM_PYTHON_PATH` | Path to Python interpreter to be used in neovim |
+
+### fonts
+
+This repository uses HackGen35 Console font.
+Download it via homebrew:
+```
+$ brew tap homebrew/cask-fonts
+$ brew install font-hackgen font-hackgen-nerd
+```
