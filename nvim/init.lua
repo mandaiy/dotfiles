@@ -1,5 +1,7 @@
 vim.scriptencoding = "utf-8"
 
+local XDG_CONFIG_HOME = vim.loop.os_getenv("XDG_CONFIG_HOME") or ""
+
 -- https://stackoverflow.com/a/73370407
 vim.cmd([[highlight MatchParen ctermfg=white ctermbg=red]])
 vim.cmd([[highlight SpellBad cterm=bold,italic]])
@@ -14,7 +16,7 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
    pattern = { "*" },
    command = ":syntax sync maxlines=200",
 })
--- Don't auto commenting new lines
+-- Don't continue commenting in new lines
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
    pattern = "*",
    command = "set fo-=c fo-=r fo-=o",
@@ -29,7 +31,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost" }, {
    end,
 })
 
--- filetype settings for specific files
+-- FileType specific settings
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
    pattern = { "CMakeLists.txt" },
    command = [[setlocal filetype=cmake]],
@@ -38,8 +40,6 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
    pattern = { "*.rb,*.rbw,*.gemspec,Vagrantfile" },
    command = [[setlocal filetype=ruby]],
 })
-
--- FileType specific settings
 vim.api.nvim_create_autocmd({ "FileType" }, {
    pattern = { "go" },
    command = [[setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4]],
@@ -104,7 +104,7 @@ vim.opt.hlsearch = true
 vim.opt.ignorecase = true
 vim.opt.inccommand = "split"
 vim.opt.incsearch = true
-vim.opt.laststatus = 2
+vim.opt.laststatus = 3
 vim.opt.list = true
 vim.opt.matchpairs:append("<:>") -- Don't pass messages to |ins-completion-menu|.
 vim.opt.mouse = "a"
@@ -171,7 +171,7 @@ vim.keymap.set("n", "<Leader>bn", ":bn<cr>", { silent = true })
 --" Close buffer
 vim.keymap.set("n", "<Leader>bd", ":bd<CR>", { silent = true })
 
----- move by displaylines
+-- move by displaylines
 vim.keymap.set("n", "j", "gj", { silent = true })
 vim.keymap.set("n", "k", "gk", { silent = true })
 
@@ -190,15 +190,15 @@ vim.keymap.set("n", "<C-l>", ":nohlsearch<CR>", { silent = true })
 -- Tabs
 vim.keymap.set("n", "<S-t>", ":tabnew<CR>", { silent = true })
 
----- Vmap for maintain Visual Mode after shifting > and <
+-- Vmap for maintain Visual Mode after shifting > and <
 vim.keymap.set("v", "<", "<gv", { silent = true })
 vim.keymap.set("v", ">", ">gv", { silent = true })
 
----- Move visual block
+-- Move visual block
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
 
----- Emacs like cursor move in insert mode
+-- Emacs like cursor move in insert mode
 vim.keymap.set("i", "<C-p>", "<Up>", { silent = true })
 vim.keymap.set("i", "<C-n>", "<Down>", { silent = true })
 vim.keymap.set("i", "<C-b>", "<Left>", { silent = true })
@@ -208,22 +208,22 @@ vim.keymap.set("i", "<C-e>", "<End>", { silent = true })
 vim.keymap.set("i", "<C-d>", "<Del>", { silent = true })
 vim.keymap.set("i", "<C-h>", "<BS>", { silent = true })
 
-----" Opens an edit command with the path of the currently edited file filled in
+-- Opens an edit command with the path of the currently edited file filled in
 vim.keymap.set("n", "<Leader>e", function()
    return ":e " .. vim.fn.expand("%:p:h") .. "/"
 end, { expr = true })
 
-----" Opens a tab edit command with the path of the currently edited file filled
+-- Opens a tab edit command with the path of the currently edited file filled
 vim.keymap.set("n", "<Leader>tab", function()
    return ":tabedit " .. vim.fn.expand("%:p:h") .. "/"
 end, { expr = true })
 
-----" Opens a split command with the path of the currently edited file filled
+-- Opens a split command with the path of the currently edited file filled
 vim.keymap.set("n", "<Leader>sp", function()
    return ":split " .. vim.fn.expand("%:p:h") .. "/"
 end, { expr = true })
 
-----" Opens a vsplit command with the path of the currently edited file filled
+-- Opens a vsplit command with the path of the currently edited file filled
 vim.keymap.set("n", "<Leader>vs", function()
    return ":vsplit " .. vim.fn.expand("%:p:h") .. "/"
 end, { expr = true })
@@ -234,17 +234,13 @@ vim.g.editorconfig = true
 -- Disable python2 support.
 vim.g.loaded_python_provider = 0
 
+-- Python path used in Neovim
 local nvim_python_path = vim.loop.os_getenv("NVIM_PYTHON_PATH")
-local XDG_CONFIG_HOME = vim.loop.os_getenv("XDG_CONFIG_HOME") or ""
 if nvim_python_path ~= nil then
    vim.g.python3_host_prog = nvim_python_path
 elseif vim.fn.isdirectory(XDG_CONFIG_HOME .. "/nvim/venv/") then
    vim.g.python3_host_prog = XDG_CONFIG_HOME .. "/nvim/venv/bin/python"
 end
-
--- Example for configuring Neovim to load user-installed installed Lua rocks:
-package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua;"
-package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua;"
 
 -- lazy bootstrap
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

@@ -1,4 +1,5 @@
 return {
+   -- Colorscheme
    {
       "folke/tokyonight.nvim",
       lazy = false, -- make sure we load this during startup if it is your main colorscheme
@@ -18,6 +19,7 @@ return {
       end,
    },
 
+   -- To disable IME on leaving insert mode
    {
       "keaising/im-select.nvim",
       config = function()
@@ -26,6 +28,42 @@ return {
          })
       end,
    },
+
+   -- EditorConfig plugin.
+   { "editorconfig/editorconfig-vim" },
+
+   -- Better '.' command.
+   { "tpope/vim-repeat" },
+
+   -- A comment-out plugin.
+   { "tpope/vim-commentary" },
+
+   -- Highlights a word under the cursor.
+   { "RRethy/vim-illuminate" },
+
+   -- Better word object handling.
+   {
+      "kylechui/nvim-surround",
+      version = "*", -- Use for stability; omit to use `main` branch for the latest features
+      config = function()
+         require("nvim-surround").setup()
+      end,
+   },
+
+   -- Handles extra whitespaces.
+   {
+      "ntpeters/vim-better-whitespace",
+      init = function()
+         -- Remove trailing spaces on save.
+         vim.api.nvim_create_autocmd("BufWrite", {
+            pattern = { "*[^{md}]" },
+            command = ":StripWhitespace",
+         })
+      end,
+   },
+
+   -- Opens the repository page in a web browser.
+   { "almo7aya/openingh.nvim" },
 
    -- Lua library for nvim.
    { "nvim-lua/plenary.nvim" },
@@ -184,24 +222,63 @@ return {
       end,
    },
 
-   -- Copilot chat.
    {
-      "CopilotC-Nvim/CopilotChat.nvim",
-      branch = "main",
-      dependencies = {
-         { "github/copilot.vim" }, -- or github/copilot.vim
-         { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
-      },
-      build = "make tiktoken",
+      "yetone/avante.nvim",
+      event = "VeryLazy",
+      version = false, -- Never set this value to "*"! Never!
       opts = {
-         debug = true,
-         window = {
-            layout = "float",
+         provider = "openai",
+         auto_suggestions_provider = "openai",
+         openai = {
+            endpoint = "https://api.openai.com/v1",
+            model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+            timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
+            temperature = 0,
+            max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+            --reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
          },
       },
-      init = function()
-         vim.keymap.set("n", "<Leader>cc", ":CopilotChatToggle<CR>", { silent = true })
-      end,
+      -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+      build = "make",
+      -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+      dependencies = {
+         "nvim-treesitter/nvim-treesitter",
+         "stevearc/dressing.nvim",
+         "nvim-lua/plenary.nvim",
+         "MunifTanjim/nui.nvim",
+         --- The below dependencies are optional,
+         "echasnovski/mini.pick", -- for file_selector provider mini.pick
+         "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+         "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+         "ibhagwan/fzf-lua", -- for file_selector provider fzf
+         "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+         "zbirenbaum/copilot.lua", -- for providers='copilot'
+         {
+            -- support for image pasting
+            "HakonHarnes/img-clip.nvim",
+            event = "VeryLazy",
+            opts = {
+               -- recommended settings
+               default = {
+                  embed_image_as_base64 = false,
+                  prompt_for_file_name = false,
+                  drag_and_drop = {
+                     insert_mode = true,
+                  },
+                  -- required for Windows users
+                  use_absolute_path = true,
+               },
+            },
+         },
+         {
+            -- Make sure to set this up properly if you have lazy=true
+            "MeanderingProgrammer/render-markdown.nvim",
+            opts = {
+               file_types = { "markdown", "Avante" },
+            },
+            ft = { "markdown", "Avante" },
+         },
+      },
    },
 
    -- A fuzzy finder.
@@ -227,7 +304,7 @@ return {
       end,
    },
 
-   -- An extension of Telescope.
+   -- An extension of Telescope (filer).
    {
       "nvim-telescope/telescope-file-browser.nvim",
       requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
@@ -243,6 +320,7 @@ return {
       end,
    },
 
+   -- An extension for Telescope (tabs).
    {
       "LukasPietzschmann/telescope-tabs",
       config = function()
@@ -257,39 +335,6 @@ return {
          })
       end,
       dependencies = { "nvim-telescope/telescope.nvim" },
-   },
-
-   -- Handles extra whitespaces.
-   {
-      "ntpeters/vim-better-whitespace",
-      init = function()
-         -- Remove trailing spaces on save.
-         vim.api.nvim_create_autocmd("BufWrite", {
-            pattern = { "*[^{md}]" },
-            command = ":StripWhitespace",
-         })
-      end,
-   },
-
-   -- EditorConfig plugin.
-   { "editorconfig/editorconfig-vim" },
-
-   -- Better '.' command.
-   { "tpope/vim-repeat" },
-
-   -- A comment-out plugin.
-   { "tpope/vim-commentary" },
-
-   -- Highlights a word under the cursor.
-   { "RRethy/vim-illuminate" },
-
-   -- Better word object handling.
-   {
-      "kylechui/nvim-surround",
-      version = "*", -- Use for stability; omit to use `main` branch for the latest features
-      config = function()
-         require("nvim-surround").setup()
-      end,
    },
 
    -- A prettier git-diff.
@@ -360,9 +405,6 @@ return {
          })
       end,
    },
-
-   -- Opens the repository page in a web browser.
-   { "almo7aya/openingh.nvim" },
 
    -- A better spell checker.
    {
@@ -530,62 +572,5 @@ return {
       "windwp/nvim-ts-autotag",
       event = { "BufReadPost", "BufNewFile", "BufWritePre" },
       opts = {},
-   },
-   -- Jupyter Notebook (ipynb -> py)
-   {
-      "GCBallesteros/jupytext.nvim",
-      config = true,
-      lazy = false,
-   },
-   {
-      "benlubas/molten-nvim",
-      -- version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
-      dependencies = {
-         {
-            "3rd/image.nvim",
-            opts = {
-               backend = "kitty", -- whatever backend you would like to use
-               max_width = 500,
-               max_height = 500,
-               max_height_window_percentage = math.huge,
-               max_width_window_percentage = math.huge,
-               window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
-               window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
-            },
-         },
-      },
-      build = ":UpdateRemotePlugins",
-      init = function()
-         vim.g.molten_image_provider = "image.nvim"
-      end,
-   },
-   {
-      "GCBallesteros/NotebookNavigator.nvim",
-      keys = {
-         {
-            "]h",
-            function()
-               require("notebook-navigator").move_cell("d")
-            end,
-         },
-         {
-            "[h",
-            function()
-               require("notebook-navigator").move_cell("u")
-            end,
-         },
-         { "<leader>rc", "<cmd>lua require('notebook-navigator').run_cell()<cr>" },
-         { "<leader>rm", "<cmd>lua require('notebook-navigator').run_and_move()<cr>" },
-      },
-      dependencies = {
-         "echasnovski/mini.comment",
-         "anuvyklack/hydra.nvim",
-         "benlubas/molten-nvim",
-      },
-      event = "VeryLazy",
-      config = function()
-         local nn = require("notebook-navigator")
-         nn.setup({ activate_hydra_keys = "<leader>h", repl_provider = "molten" })
-      end,
    },
 }
