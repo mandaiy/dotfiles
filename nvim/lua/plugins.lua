@@ -4,15 +4,6 @@ return {
       lazy = false, -- make sure we load this during startup if it is your main colorscheme
       priority = 1000, -- make sure to load this before all the other start plugins
       config = function()
-         require("tokyonight").setup({
-            style = "storm",
-            transparent = true,
-            styles = {
-               sidebars = "transparent",
-               floats = "transparent",
-            },
-         })
-
          -- load the colorscheme here
          vim.cmd([[colorscheme tokyonight]])
       end,
@@ -31,12 +22,15 @@ return {
    { "nvim-lua/plenary.nvim" },
 
    -- A plugin for fancy fonts.
-   { "nvim-tree/nvim-web-devicons", lazy = true },
+   { "nvim-tree/nvim-web-devicons", default = true },
 
    -- Language Server config.
    {
       "neovim/nvim-lspconfig",
-      dependencies = { "aerial.nvim", "coq_nvim" },
+      dependencies = {
+         "aerial.nvim",
+         "mrcjkb/rustaceanvim",
+      },
       config = function()
          local lspconfig = require("lspconfig")
 
@@ -65,34 +59,25 @@ return {
             },
          }
 
-         -- Update opts if coq is available.
-         local ok, coq = pcall(require, "coq")
+         -- Update opts if nvim-cmp is available.
+         local ok, nvim_lsp = pcall(require, "cmp_nvim_lsp")
          if not ok then
-            print("LspSetup: coq not found")
+            print("LspSetup: nvim-cmp not found")
          else
-            print("LspSetup: coq found. use its functionality")
-            opts = coq.lsp_ensure_capabilities(opts)
+            opts["capabilities"] = nvim_lsp.default_capabilities()
          end
 
          -- Setup LSP servers.
          --
          if vim.fn.executable("terraform-ls") ~= 0 then
-            print("LspSetup: setting up for terraform-ls")
             lspconfig.terraformls.setup(opts)
          end
 
-         if vim.fn.executable("rust-analyzer") ~= 0 then
-            print("LspSetup: setting up for rust-analyzer")
-            lspconfig.rust_analyzer.setup(opts)
-         end
-
          if vim.fn.executable("solargraph") ~= 0 then
-            print("LspSetup: setting up for solargraph")
             lspconfig.solargraph.setup(opts)
          end
 
          if vim.fn.executable("pyright") ~= 0 then
-            print("LspSetup: setting up for pyright")
             local pythonPath = vim.fn.system("which python")
             opts["python"] = {
                pythonPath = pythonPath,
@@ -101,17 +86,14 @@ return {
          end
 
          if vim.fn.executable("gopls") ~= 0 then
-            print("LspSetup: setting up for gopls")
             lspconfig.gopls.setup(opts)
          end
 
          if vim.fn.executable("tsserver") ~= 0 then
-            print("LspSetup: setting up for tsserver")
             lspconfig.ts_ls.setup(opts)
          end
 
          if vim.fn.executable("lua-language-server") ~= 0 then
-            print("LspSetup: setting up for lua-language-server")
             opts["settings"] = {
                Lua = {
                   runtime = {
@@ -136,27 +118,134 @@ return {
             }
             lspconfig.lua_ls.setup(opts)
          end
+
+         if vim.fn.executable("rust-analyzer") ~= 0 then
+            -- Here we use "rustaceanvim" plugin for rust-analyser instead of native lsp setup.
+            -- This setup does not need to be done here technically,
+            -- but the opts variable can be reused if we setup it here.
+            local ok, rustaceanvim = pcall(require, "rustaceanvim")
+            if ok then
+               rustaceanvim.setup({
+                  server = opts,
+               })
+            end
+         end
       end,
    },
 
-   -- Completion plugin.
+   ---- noice.nvim
    {
-      "ms-jpq/coq_nvim",
-      branch = "coq",
-      init = function()
-         -- coq settings. This has to precede require('coq').
-         vim.g.coq_settings = {
-            ["auto_start"] = true,
-            ["keymap.manual_complete"] = "<C-C>",
-            ["xdg"] = true,
-         }
-      end,
+      "folke/noice.nvim",
+      event = "VeryLazy",
+      opts = {
+         lsp = {
+            -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+            override = {
+               ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+               ["vim.lsp.util.stylize_markdown"] = true,
+               ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+            },
+         },
+      },
+      dependencies = {
+         -- "nvim-telescope/telescope.nvim",
+         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+         "MunifTanjim/nui.nvim",
+         -- OPTIONAL:
+         --   `nvim-notify` is only needed, if you want to use the notification view.
+         --   If not available, we use `mini` as the fallback
+         "rcarriga/nvim-notify",
+      },
+      -- config = function()
+      --    require("telescope").load_extension("noice")
+      -- end
    },
 
-   -- Bundled data for coq_nvim.
    {
-      "ms-jpq/coq.artifacts",
-      branch = "artifacts",
+      "hrsh7th/nvim-cmp",
+      event = "VeryLazy",
+      dependencies = {
+         "hrsh7th/cmp-nvim-lsp",
+         "hrsh7th/cmp-buffer",
+         "hrsh7th/cmp-path",
+         "hrsh7th/cmp-cmdline",
+         "hrsh7th/cmp-calc",
+         "hrsh7th/cmp-emoji",
+      },
+      config = function()
+         local has_words_before = function()
+            unpack = unpack or table.unpack
+            local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+            return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+         end
+
+         local cmp = require("cmp")
+
+         cmp.setup({
+            mapping = cmp.mapping.preset.insert({
+               ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+               ["<C-f>"] = cmp.mapping.scroll_docs(4),
+               ["<C-c>"] = cmp.mapping.complete(),
+               ["<C-e>"] = cmp.mapping.abort(),
+               ["<CR>"] = cmp.mapping.confirm({ select = true }),
+               ["<Tab>"] = function(fallback)
+                  if not cmp.select_next_item() then
+                     if vim.bo.buftype ~= "prompt" and has_words_before() then
+                        cmp.complete()
+                     else
+                        fallback()
+                     end
+                  end
+               end,
+               ["<S-Tab>"] = function(fallback)
+                  if not cmp.select_prev_item() then
+                     if vim.bo.buftype ~= "prompt" and has_words_before() then
+                        cmp.complete()
+                     else
+                        fallback()
+                     end
+                  end
+               end,
+            }),
+            sources = cmp.config.sources( -- sources
+               {
+                  { name = "nvim_lsp" },
+               },
+               {
+                  { name = "buffer", keyword_length = 3 },
+               },
+               {
+                  { name = "emoji" },
+               },
+               {
+                  { name = "calc" },
+               },
+               {
+                  { name = "path" },
+               },
+               {
+                  { name = "codecompanion" },
+               }
+            ),
+         })
+         cmp.setup.cmdline(":", {
+            mapping = cmp.mapping.preset.cmdline(),
+            sources = cmp.config.sources( -- sources
+               {
+                  { name = "path" },
+               },
+               {
+                  { name = "cmdline" },
+               }
+            ),
+         })
+         cmp.setup.cmdline({ "/", "?" }, {
+            mapping = cmp.mapping.preset.cmdline(),
+            sources = {
+               { name = "buffer" },
+            },
+         })
+      end,
    },
 
    -- Outline viewer.
@@ -184,23 +273,65 @@ return {
       end,
    },
 
-   -- Copilot chat.
    {
-      "CopilotC-Nvim/CopilotChat.nvim",
-      branch = "main",
-      dependencies = {
-         { "github/copilot.vim" }, -- or github/copilot.vim
-         { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
-      },
-      build = "make tiktoken",
+      "MeanderingProgrammer/render-markdown.nvim",
+      dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.icons" },
+      ft = { "codecompanion" },
       opts = {
-         debug = true,
-         window = {
-            layout = "float",
-         },
+         file_types = { "codecompanion" },
       },
-      init = function()
-         vim.keymap.set("n", "<Leader>cc", ":CopilotChatToggle<CR>", { silent = true })
+   },
+
+   {
+      "olimorris/codecompanion.nvim",
+      dependencies = {
+         "nvim-lua/plenary.nvim",
+         "nvim-treesitter/nvim-treesitter",
+         "banjo/contextfiles.nvim",
+      },
+      keys = {
+         { "<Leader>aa", ":CodeCompanionChat toggle<CR>", mode = { "n", "v" }, silent = true },
+         { "<Leader>ae", ":CodeCompanionAction<CR>", mode = { "n", "v" }, silent = true },
+         { "<Leader>af", ":CodeCompanion<CR>", mode = { "n", "v" }, silent = true },
+      },
+      opts = function(_, opts)
+         local base_opts = {
+            adapters = {
+               copilot = function()
+                  return require("codecompanion.adapters").extend("copilot", {
+                     schema = { model = { default = "claude-3.7-sonnet" } },
+                  })
+               end,
+            },
+            opts = {
+               language = "Japanese",
+            },
+            display = {
+               chat = {
+                  auto_scroll = false,
+                  show_header_separator = true,
+                  -- show_settings = true,
+                  window = {
+                     width = 0.35,
+                     position = "right",
+                  },
+               },
+            },
+            strategies = {
+               chat = {
+                  adapter = "copilot",
+                  roles = {
+                     llm = function(adapter)
+                        return "  CodeCompanion (" .. adapter.formatted_name .. ")"
+                     end,
+                     user = "  Me",
+                  },
+               },
+            },
+         }
+         local env_opts = {}
+
+         return vim.tbl_deep_extend("force", opts, base_opts, opts)
       end,
    },
 
@@ -410,182 +541,10 @@ return {
    -- from LazyVim
    -- https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/plugins/treesitter.lua
 
-   -- Treesitter is a new parser generator tool that we can
-   -- use in Neovim to power faster and more accurate
-   -- syntax highlighting.
-   {
-      "nvim-treesitter/nvim-treesitter",
-      version = false, -- last release is way too old and doesn't work on Windows
-      build = ":TSUpdate",
-      event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-      init = function(plugin)
-         -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
-         -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
-         -- no longer trigger the **nvim-treesitter** module to be loaded in time.
-         -- Luckily, the only things that those plugins need are the custom queries, which we make available
-         -- during startup.
-         require("lazy.core.loader").add_to_rtp(plugin)
-         require("nvim-treesitter.query_predicates")
-      end,
-      dependencies = {
-         {
-            "nvim-treesitter/nvim-treesitter-textobjects",
-            config = function()
-               -- When in diff mode, we want to use the default
-               -- vim text objects c & C instead of the treesitter ones.
-               local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
-               local configs = require("nvim-treesitter.configs")
-               for name, fn in pairs(move) do
-                  if name:find("goto") == 1 then
-                     move[name] = function(q, ...)
-                        if vim.wo.diff then
-                           local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
-                           for key, query in pairs(config or {}) do
-                              if q == query and key:find("[%]%[][cC]") then
-                                 vim.cmd("normal! " .. key)
-                                 return
-                              end
-                           end
-                        end
-                        return fn(q, ...)
-                     end
-                  end
-               end
-            end,
-         },
-      },
-      cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
-      keys = {
-         { "<c-space>", desc = "Increment selection" },
-         { "<bs>", desc = "Decrement selection", mode = "x" },
-      },
-      ---@type TSConfig
-      ---@diagnostic disable-next-line: missing-fields
-      opts = {
-         highlight = { enable = true },
-         indent = { enable = true },
-         ensure_installed = {
-            "bash",
-            "c",
-            "diff",
-            "html",
-            "javascript",
-            "jsdoc",
-            "json",
-            "jsonc",
-            "lua",
-            "luadoc",
-            "luap",
-            "markdown",
-            "markdown_inline",
-            "python",
-            "query",
-            "regex",
-            "rust",
-            "toml",
-            "tsx",
-            "typescript",
-            "vim",
-            "vimdoc",
-            "xml",
-            "yaml",
-         },
-         incremental_selection = {
-            enable = true,
-            keymaps = {
-               init_selection = "<C-space>",
-               node_incremental = "<C-space>",
-               scope_incremental = false,
-               node_decremental = "<bs>",
-            },
-         },
-         textobjects = {
-            move = {
-               enable = true,
-               goto_next_start = { ["]f"] = "@function.outer", ["]c"] = "@class.outer" },
-               goto_next_end = { ["]F"] = "@function.outer", ["]C"] = "@class.outer" },
-               goto_previous_start = { ["[f"] = "@function.outer", ["[c"] = "@class.outer" },
-               goto_previous_end = { ["[F"] = "@function.outer", ["[C"] = "@class.outer" },
-            },
-         },
-      },
-      ---@param opts TSConfig
-      config = function(_, opts)
-         if type(opts.ensure_installed) == "table" then
-            ---@type table<string, boolean>
-            local added = {}
-            opts.ensure_installed = vim.tbl_filter(function(lang)
-               if added[lang] then
-                  return false
-               end
-               added[lang] = true
-               return true
-            end, opts.ensure_installed)
-         end
-         require("nvim-treesitter.configs").setup(opts)
-      end,
-   },
    -- Automatically add closing tags for HTML and JSX
    {
       "windwp/nvim-ts-autotag",
       event = { "BufReadPost", "BufNewFile", "BufWritePre" },
       opts = {},
-   },
-   -- Jupyter Notebook (ipynb -> py)
-   {
-      "GCBallesteros/jupytext.nvim",
-      config = true,
-      lazy = false,
-   },
-   {
-      "benlubas/molten-nvim",
-      -- version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
-      dependencies = {
-         {
-            "3rd/image.nvim",
-            opts = {
-               backend = "kitty", -- whatever backend you would like to use
-               max_width = 500,
-               max_height = 500,
-               max_height_window_percentage = math.huge,
-               max_width_window_percentage = math.huge,
-               window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
-               window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
-            },
-         },
-      },
-      build = ":UpdateRemotePlugins",
-      init = function()
-         vim.g.molten_image_provider = "image.nvim"
-      end,
-   },
-   {
-      "GCBallesteros/NotebookNavigator.nvim",
-      keys = {
-         {
-            "]h",
-            function()
-               require("notebook-navigator").move_cell("d")
-            end,
-         },
-         {
-            "[h",
-            function()
-               require("notebook-navigator").move_cell("u")
-            end,
-         },
-         { "<leader>rc", "<cmd>lua require('notebook-navigator').run_cell()<cr>" },
-         { "<leader>rm", "<cmd>lua require('notebook-navigator').run_and_move()<cr>" },
-      },
-      dependencies = {
-         "echasnovski/mini.comment",
-         "anuvyklack/hydra.nvim",
-         "benlubas/molten-nvim",
-      },
-      event = "VeryLazy",
-      config = function()
-         local nn = require("notebook-navigator")
-         nn.setup({ activate_hydra_keys = "<leader>h", repl_provider = "molten" })
-      end,
    },
 }
