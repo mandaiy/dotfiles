@@ -326,6 +326,52 @@ return {
                      end,
                      user = "  Me",
                   },
+                  keymaps = {
+                     send = {
+                        callback = function(chat)
+                           vim.cmd("stopinsert")
+                           chat:add_buf_message({ role = "llm", content = "" })
+                           chat:submit()
+                        end,
+                        index = 1,
+                        description = "Send",
+                     },
+                  },
+                  -- prompts = {
+                  --    {
+                  --       role = "user",
+                  --       content = function(context)
+                  --          local ctx = require("contextfiles.extensions.codecompanion")
+                  --          return ctx.get(context.filename, {
+                  --             include = { "README.md", "**/*.md", "**/*.mdc" },
+                  --             exclude = { "node_modules/**" },
+                  --          }, {
+                  --             format = "markdown",
+                  --          })
+                  --       end,
+                  --    },
+                  -- },
+               },
+            },
+            prompt_library = {
+               ["context"] = {
+                  strategy = "chat",
+                  description = "Chat with context files",
+                  opts = {
+                     -- ...
+                  },
+                  prompts = {
+                     {
+                        role = "user",
+                        opts = {
+                           contains_code = true,
+                        },
+                        content = function(context)
+                           local ctx = require("contextfiles.extensions.codecompanion")
+                           return ctx.get(context.filename, {}, {})
+                        end,
+                     },
+                  },
                },
             },
          }
@@ -334,6 +380,21 @@ return {
          return vim.tbl_deep_extend("force", opts, base_opts, opts)
       end,
    },
+
+   -- {
+   --     "ravitemer/mcphub.nvim",
+   --     dependencies = {
+   --       "nvim-lua/plenary.nvim",  -- Required for Job and HTTP requests
+   --     },
+   --     -- comment the following line to ensure hub will be ready at the earliest
+   --     cmd = "MCPHub",  -- lazy load by default
+   --     build = "npm install -g mcp-hub@latest",  -- Installs required mcp-hub npm module
+   --     -- uncomment this if you don't want mcp-hub to be available globally or can't use -g
+   --     -- build = "bundled_build.lua",  -- Use this and set use_bundled_binary = true in opts  (see Advanced configuration)
+   --     config = function()
+   --       require("mcphub").setup()
+   --     end,
+   -- }
 
    -- A fuzzy finder.
    {
