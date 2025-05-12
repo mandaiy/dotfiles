@@ -29,7 +29,6 @@ return {
       "neovim/nvim-lspconfig",
       dependencies = {
          "aerial.nvim",
-         "mrcjkb/rustaceanvim",
       },
       config = function()
          local lspconfig = require("lspconfig")
@@ -287,98 +286,46 @@ return {
       dependencies = {
          "nvim-lua/plenary.nvim",
          "nvim-treesitter/nvim-treesitter",
-         "banjo/contextfiles.nvim",
       },
       keys = {
          { "<Leader>aa", ":CodeCompanionChat toggle<CR>", mode = { "n", "v" }, silent = true },
          { "<Leader>ae", ":CodeCompanionAction<CR>", mode = { "n", "v" }, silent = true },
          { "<Leader>af", ":CodeCompanion<CR>", mode = { "n", "v" }, silent = true },
       },
-      opts = function(_, opts)
-         local base_opts = {
-            adapters = {
-               copilot = function()
-                  return require("codecompanion.adapters").extend("copilot", {
-                     schema = { model = { default = "claude-3.7-sonnet" } },
-                  })
-               end,
-            },
-            opts = {
-               language = "Japanese",
-            },
-            display = {
-               chat = {
-                  auto_scroll = false,
-                  show_header_separator = true,
-                  -- show_settings = true,
-                  window = {
-                     width = 0.35,
-                     position = "right",
-                  },
+      opts = {
+         opts = {
+            language = "Japanese",
+         },
+         adapters = {
+            copilot = function()
+               return require("codecompanion.adapters").extend("copilot", {
+                  schema = { model = { default = "claude-3.7-sonnet" } },
+               })
+            end,
+         },
+         display = {
+            chat = {
+               auto_scroll = false,
+               show_header_separator = true,
+               -- show_settings = true,
+               window = {
+                  width = 0.35,
+                  position = "right",
                },
             },
-            strategies = {
-               chat = {
-                  adapter = "copilot",
-                  roles = {
-                     llm = function(adapter)
-                        return "  CodeCompanion (" .. adapter.formatted_name .. ")"
-                     end,
-                     user = "  Me",
-                  },
-                  keymaps = {
-                     send = {
-                        callback = function(chat)
-                           vim.cmd("stopinsert")
-                           chat:add_buf_message({ role = "llm", content = "" })
-                           chat:submit()
-                        end,
-                        index = 1,
-                        description = "Send",
-                     },
-                  },
-                  -- prompts = {
-                  --    {
-                  --       role = "user",
-                  --       content = function(context)
-                  --          local ctx = require("contextfiles.extensions.codecompanion")
-                  --          return ctx.get(context.filename, {
-                  --             include = { "README.md", "**/*.md", "**/*.mdc" },
-                  --             exclude = { "node_modules/**" },
-                  --          }, {
-                  --             format = "markdown",
-                  --          })
-                  --       end,
-                  --    },
-                  -- },
+         },
+         strategies = {
+            chat = {
+               adapter = "copilot",
+               roles = {
+                  llm = function(adapter)
+                     return "  CodeCompanion (" .. adapter.formatted_name .. ")"
+                  end,
+                  user = "  Me",
                },
             },
-            prompt_library = {
-               ["context"] = {
-                  strategy = "chat",
-                  description = "Chat with context files",
-                  opts = {
-                     -- ...
-                  },
-                  prompts = {
-                     {
-                        role = "user",
-                        opts = {
-                           contains_code = true,
-                        },
-                        content = function(context)
-                           local ctx = require("contextfiles.extensions.codecompanion")
-                           return ctx.get(context.filename, {}, {})
-                        end,
-                     },
-                  },
-               },
-            },
-         }
-         local env_opts = {}
-
-         return vim.tbl_deep_extend("force", opts, base_opts, opts)
-      end,
+         },
+      },
    },
 
    -- {
