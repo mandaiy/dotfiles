@@ -92,6 +92,10 @@ return {
             lspconfig.ts_ls.setup(opts)
          end
 
+         if vim.fn.executable("rust-analyzer") ~= 0 then
+            lspconfig.rust_analyzer.setup(opts)
+         end
+
          if vim.fn.executable("lua-language-server") ~= 0 then
             opts["settings"] = {
                Lua = {
@@ -117,18 +121,6 @@ return {
             }
             lspconfig.lua_ls.setup(opts)
          end
-
-         if vim.fn.executable("rust-analyzer") ~= 0 then
-            -- Here we use "rustaceanvim" plugin for rust-analyser instead of native lsp setup.
-            -- This setup does not need to be done here technically,
-            -- but the opts variable can be reused if we setup it here.
-            local ok, rustaceanvim = pcall(require, "rustaceanvim")
-            if ok then
-               rustaceanvim.setup({
-                  server = opts,
-               })
-            end
-         end
       end,
    },
 
@@ -147,17 +139,13 @@ return {
          },
       },
       dependencies = {
-         -- "nvim-telescope/telescope.nvim",
          -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
          "MunifTanjim/nui.nvim",
          -- OPTIONAL:
          --   `nvim-notify` is only needed, if you want to use the notification view.
          --   If not available, we use `mini` as the fallback
-         "rcarriga/nvim-notify",
+         --"rcarriga/nvim-notify",
       },
-      -- config = function()
-      --    require("telescope").load_extension("noice")
-      -- end
    },
 
    {
@@ -282,15 +270,48 @@ return {
    },
 
    {
+      "echasnovski/mini.diff",
+      config = function()
+         local diff = require("mini.diff")
+         diff.setup({
+            -- Disabled by default
+            source = diff.gen_source.none(),
+         })
+      end,
+   },
+
+   {
+      "Davidyz/VectorCode",
+      version = "*",
+      dependencies = { "nvim-lua/plenary.nvim" },
+   },
+
+   {
+      "ravitemer/mcphub.nvim",
+      dependencies = {
+         "nvim-lua/plenary.nvim",
+      },
+      build = "bundled_build.lua", -- Bundles `mcp-hub` binary along with the neovim plugin
+      config = function()
+         require("mcphub").setup({
+            use_bundled_binary = true, -- Use local `mcp-hub` binary
+         })
+      end,
+   },
+
+   {
       "olimorris/codecompanion.nvim",
       dependencies = {
+         "echasnovski/mini.diff",
+         "ravitemer/mcphub.nvim",
+         "banjo/contextfiles.nvim",
          "nvim-lua/plenary.nvim",
          "nvim-treesitter/nvim-treesitter",
       },
       keys = {
-         { "<Leader>aa", ":CodeCompanionChat toggle<CR>", mode = { "n", "v" }, silent = true },
-         { "<Leader>ae", ":CodeCompanionAction<CR>", mode = { "n", "v" }, silent = true },
-         { "<Leader>af", ":CodeCompanion<CR>", mode = { "n", "v" }, silent = true },
+         { "<Leader>aa", ":CodeCompanionChat toggle<CR>", mode = { "n", "v" }, noremap = true, silent = true },
+         { "<Leader>ae", ":CodeCompanionActions<CR>", mode = { "n", "v" }, noremap = true, silent = true },
+         { "<Leader>af", ":CodeCompanion", mode = { "n", "v" }, noremap = true, silent = true },
       },
       opts = {
          opts = {
@@ -299,11 +320,14 @@ return {
          adapters = {
             copilot = function()
                return require("codecompanion.adapters").extend("copilot", {
-                  schema = { model = { default = "claude-3.7-sonnet" } },
+                  schema = { model = { default = "claude-sonnet-4" } },
                })
             end,
          },
          display = {
+            diff = {
+               provider = "mini_diff",
+            },
             chat = {
                auto_scroll = false,
                show_header_separator = true,
@@ -325,23 +349,31 @@ return {
                },
             },
          },
+         extensions = {
+            vectorcode = {
+               opts = {
+                  add_tool = true,
+               },
+            },
+            contextfiles = {
+               opts = {
+                  slash_command = {
+                     enabled = true,
+                     name = "cursorrules",
+                  },
+               },
+            },
+            mcphub = {
+               callback = "mcphub.extensions.codecompanion",
+               opts = {
+                  show_result_in_chat = true, -- Show mcp tool results in chat
+                  make_vars = true, -- Convert resources to #variables
+                  make_slash_commands = true, -- Add prompts as /slash commands
+               },
+            },
+         },
       },
    },
-
-   -- {
-   --     "ravitemer/mcphub.nvim",
-   --     dependencies = {
-   --       "nvim-lua/plenary.nvim",  -- Required for Job and HTTP requests
-   --     },
-   --     -- comment the following line to ensure hub will be ready at the earliest
-   --     cmd = "MCPHub",  -- lazy load by default
-   --     build = "npm install -g mcp-hub@latest",  -- Installs required mcp-hub npm module
-   --     -- uncomment this if you don't want mcp-hub to be available globally or can't use -g
-   --     -- build = "bundled_build.lua",  -- Use this and set use_bundled_binary = true in opts  (see Advanced configuration)
-   --     config = function()
-   --       require("mcphub").setup()
-   --     end,
-   -- }
 
    -- A fuzzy finder.
    {

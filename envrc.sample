@@ -14,4 +14,6 @@ if [ -d "$PWD/.venv/bin" ]; then
     source "$PWD/.venv/bin/activate"
 fi
 
-dotenv
+if [ -e "$PWD/.env" ]; then
+    dotenv
+fi
