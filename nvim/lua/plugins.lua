@@ -24,6 +24,51 @@ return {
    -- A plugin for fancy fonts.
    { "nvim-tree/nvim-web-devicons", default = true },
 
+   {
+      "nvim-mini/mini.files",
+      version = false,
+      config = function()
+         require("mini.files").setup()
+         vim.keymap.set(
+            "n",
+            "<Leader>b",
+            ":lua require('mini.files').open(vim.fn.expand('%:p:h'))<CR>",
+            { silent = true }
+         )
+      end,
+   },
+
+   {
+      "nvim-mini/mini.diff",
+      config = function()
+         local diff = require("mini.diff")
+         diff.setup({
+            -- Disabled by default
+            source = diff.gen_source.none(),
+         })
+      end,
+   },
+
+   {
+      "nvim-mini/mini.surround",
+      config = function()
+         require("mini.surround").setup()
+      end,
+   },
+
+   {
+      "nvim-mini/mini.indentscope",
+      config = function()
+         require("mini.indentscope").setup()
+      end,
+   },
+
+   -- EditorConfig plugin.
+   { "editorconfig/editorconfig-vim" },
+
+   -- A comment-out plugin.
+   { "tpope/vim-commentary" },
+
    -- Language Server config.
    {
       "neovim/nvim-lspconfig",
@@ -67,7 +112,6 @@ return {
          end
 
          -- Setup LSP servers.
-         --
          if vim.fn.executable("terraform-ls") ~= 0 then
             lspconfig.terraformls.setup(opts)
          end
@@ -76,10 +120,17 @@ return {
             lspconfig.solargraph.setup(opts)
          end
 
+         local has_ruff = vim.fn.executable("ruff-lsp") ~= 0
+         if has_ruff then
+            lspconfig.ruff_lsp.setup(opts)
+         end
          if vim.fn.executable("pyright") ~= 0 then
             local pythonPath = vim.fn.system("which python")
             opts["python"] = {
                pythonPath = pythonPath,
+            }
+            opts["pyright"] = {
+               disableOrganizeImports = has_ruff,
             }
             lspconfig.pyright.setup(opts)
          end
@@ -121,6 +172,43 @@ return {
             }
             lspconfig.lua_ls.setup(opts)
          end
+      end,
+   },
+
+   {
+      "kosayoda/nvim-lightbulb",
+      config = function()
+         require("nvim-lightbulb").setup({
+            autocmd = { enabled = true },
+            -- 行番号ではなく行末に出す
+            sign = { enabled = false },
+            virtual_text = { enabled = true },
+         })
+      end,
+   },
+
+   {
+      "aznhe21/actions-preview.nvim",
+      config = function()
+         require("actions-preview").setup({
+            -- バックエンドに使うプラグインの優先順位。デフォルトではtelescopeを優先的に使う
+            -- backend = { "nui", "telescope" },
+            -- telescopeで表示する場合の設定。ウィンドウ小さめでもいい感じに出す
+            telescope = {
+               sorting_strategy = "ascending",
+               layout_strategy = "vertical",
+               layout_config = {
+                  width = 0.8,
+                  height = 0.9,
+                  prompt_position = "top",
+                  preview_cutoff = 20,
+                  preview_height = function(_, _, max_lines)
+                     return max_lines - 15
+                  end,
+               },
+            },
+         })
+         vim.keymap.set("n", "<Leader>gf", require("actions-preview").code_actions, { buffer = bufnr, silent = true })
       end,
    },
 
@@ -261,117 +349,27 @@ return {
    },
 
    {
-      "MeanderingProgrammer/render-markdown.nvim",
-      dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.icons" },
-      ft = { "codecompanion" },
-      opts = {
-         file_types = { "codecompanion" },
-      },
-   },
-
-   {
-      "echasnovski/mini.diff",
-      config = function()
-         local diff = require("mini.diff")
-         diff.setup({
-            -- Disabled by default
-            source = diff.gen_source.none(),
-         })
-      end,
-   },
-
-   {
-      "Davidyz/VectorCode",
-      version = "*",
-      dependencies = { "nvim-lua/plenary.nvim" },
-   },
-
-   {
-      "ravitemer/mcphub.nvim",
-      dependencies = {
-         "nvim-lua/plenary.nvim",
-      },
-      build = "bundled_build.lua", -- Bundles `mcp-hub` binary along with the neovim plugin
-      config = function()
-         require("mcphub").setup({
-            use_bundled_binary = true, -- Use local `mcp-hub` binary
-         })
-      end,
-   },
-
-   {
-      "olimorris/codecompanion.nvim",
-      dependencies = {
-         "echasnovski/mini.diff",
-         "ravitemer/mcphub.nvim",
-         "banjo/contextfiles.nvim",
-         "nvim-lua/plenary.nvim",
-         "nvim-treesitter/nvim-treesitter",
-      },
+      "coder/claudecode.nvim",
+      dependencies = { "folke/snacks.nvim" },
+      config = true,
       keys = {
-         { "<Leader>aa", ":CodeCompanionChat toggle<CR>", mode = { "n", "v" }, noremap = true, silent = true },
-         { "<Leader>ae", ":CodeCompanionActions<CR>", mode = { "n", "v" }, noremap = true, silent = true },
-         { "<Leader>af", ":CodeCompanion", mode = { "n", "v" }, noremap = true, silent = true },
-      },
-      opts = {
-         opts = {
-            language = "Japanese",
+         { "<leader>a", nil, desc = "AI/Claude Code" },
+         { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+         { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+         { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+         { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+         { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
+         { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
+         { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
+         {
+            "<leader>as",
+            "<cmd>ClaudeCodeTreeAdd<cr>",
+            desc = "Add file",
+            ft = { "NvimTree", "neo-tree", "oil", "minifiles" },
          },
-         adapters = {
-            copilot = function()
-               return require("codecompanion.adapters").extend("copilot", {
-                  schema = { model = { default = "claude-sonnet-4" } },
-               })
-            end,
-         },
-         display = {
-            diff = {
-               provider = "mini_diff",
-            },
-            chat = {
-               auto_scroll = false,
-               show_header_separator = true,
-               -- show_settings = true,
-               window = {
-                  width = 0.35,
-                  position = "right",
-               },
-            },
-         },
-         strategies = {
-            chat = {
-               adapter = "copilot",
-               roles = {
-                  llm = function(adapter)
-                     return "  CodeCompanion (" .. adapter.formatted_name .. ")"
-                  end,
-                  user = "  Me",
-               },
-            },
-         },
-         extensions = {
-            vectorcode = {
-               opts = {
-                  add_tool = true,
-               },
-            },
-            contextfiles = {
-               opts = {
-                  slash_command = {
-                     enabled = true,
-                     name = "cursorrules",
-                  },
-               },
-            },
-            mcphub = {
-               callback = "mcphub.extensions.codecompanion",
-               opts = {
-                  show_result_in_chat = true, -- Show mcp tool results in chat
-                  make_vars = true, -- Convert resources to #variables
-                  make_slash_commands = true, -- Add prompts as /slash commands
-               },
-            },
-         },
+         -- Diff management
+         { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+         { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
       },
    },
 
@@ -442,49 +440,8 @@ return {
       end,
    },
 
-   -- EditorConfig plugin.
-   { "editorconfig/editorconfig-vim" },
-
-   -- Better '.' command.
-   { "tpope/vim-repeat" },
-
-   -- A comment-out plugin.
-   { "tpope/vim-commentary" },
-
-   -- Highlights a word under the cursor.
-   { "RRethy/vim-illuminate" },
-
-   -- Better word object handling.
-   {
-      "kylechui/nvim-surround",
-      version = "*", -- Use for stability; omit to use `main` branch for the latest features
-      config = function()
-         require("nvim-surround").setup()
-      end,
-   },
-
    -- A prettier git-diff.
-   {
-      "sindrets/diffview.nvim",
-      init = function()
-         vim.keymap.set("n", "<Leader>do", ":DiffviewOpen<CR>", { silent = true })
-         vim.keymap.set("n", "<Leader>dr", ":DiffviewRefresh<CR>", { silent = true })
-         vim.keymap.set("n", "<Leader>df", ":DiffviewFileHistory %<CR>", { silent = true })
-      end,
-   },
-
-   -- A Git extension.
-   {
-      "NeogitOrg/neogit",
-      dependencies = { "nvim-lua/plenary.nvim" },
-      init = function()
-         vim.keymap.set("n", "<Leader>dd", ":Neogit<CR>", { silent = true })
-      end,
-
-      config = function()
-         require("neogit").setup({})
-      end,
-   },
+   { "sindrets/diffview.nvim" },
 
    -- An extension for Git diff and operations.
    -- This shows git-diff on the screen gutter area, previews hunks, deleted lines, and blames.
@@ -496,37 +453,29 @@ return {
             on_attach = function(bufnr)
                local gitsigns = package.loaded.gitsigns
 
-               -- Navigation
-               vim.keymap.set("n", "]c", function()
-                  if vim.wo.diff then
-                     return "]c"
-                  end
-                  vim.schedule(function()
-                     gitsigns.next_hunk()
-                  end)
-                  return "<Ignore>"
-               end, { expr = true, buffer = bufnr, silent = true })
+               vim.keymap.set("n", "<Leader>dP", gitsigns.preview_hunk, { buffer = bufnr, silent = true })
+               vim.keymap.set("n", "<Leader>dp", gitsigns.preview_hunk_inline, { buffer = bufnr, silent = true })
 
-               vim.keymap.set("n", "[c", function()
-                  if vim.wo.diff then
-                     return "[c"
-                  end
-                  vim.schedule(function()
-                     gitsigns.prev_hunk()
-                  end)
-                  return "<Ignore>"
-               end, { expr = true, buffer = bufnr, silent = true })
+               vim.keymap.set("n", "<Leader>dh", gitsigns.reset_hunk, { buffer = bufnr, silent = true })
+               vim.keymap.set("v", "<Leader>dh", function()
+                  gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+               end, { buffer = bufnr, silent = true })
 
-               vim.keymap.set("n", "<Leader>dp", gitsigns.preview_hunk, { buffer = bufnr, silent = true })
                vim.keymap.set("n", "<Leader>dt", gitsigns.toggle_deleted, { buffer = bufnr, silent = true })
+
+               vim.keymap.set("n", "<Leader>dd", gitsigns.diffthis, { buffer = bufnr, silent = true })
+               vim.keymap.set("n", "<Leader>dD", function()
+                  gitsigns.diffthis("~")
+               end, { buffer = bufnr, silent = true })
 
                vim.keymap.set("n", "<Leader>db", function()
                   gitsigns.blame_line({ full = true })
                end, { buffer = bufnr, silent = true })
 
-               vim.keymap.set("n", "<Leader>dq", function()
+               vim.keymap.set("n", "<Leader>dQ", function()
                   gitsigns.setqflist("all")
                end, { expr = true, buffer = bufnr, silent = true })
+               vim.keymap.set("n", "<Leader>dq", gitsigns.setqflist, { expr = true, buffer = bufnr, silent = true })
             end,
          })
       end,

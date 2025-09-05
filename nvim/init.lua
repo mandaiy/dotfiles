@@ -242,10 +242,6 @@ elseif vim.fn.isdirectory(XDG_CONFIG_HOME .. "/nvim/venv/") then
    vim.g.python3_host_prog = XDG_CONFIG_HOME .. "/nvim/venv/bin/python"
 end
 
--- Example for configuring Neovim to load user-installed installed Lua rocks:
-package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua;"
-package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua;"
-
 -- lazy bootstrap
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
