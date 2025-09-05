@@ -1,3 +1,5 @@
+vim.loader.enable()
+
 vim.scriptencoding = "utf-8"
 
 -- https://stackoverflow.com/a/73370407
