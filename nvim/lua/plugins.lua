@@ -44,6 +44,9 @@ return {
       end,
    },
 
+   -- Highlights a word under the cursor.
+   { "RRethy/vim-illuminate" },
+
    -- A filer.
    {
       "nvim-mini/mini.files",
@@ -534,9 +537,10 @@ return {
             "jupyter",
             "okta",
             "piyo",
+            "quickfix",
+            "raise",
             "terraform",
             "unmarshal",
-            "quickfix",
             "usecase",
          }
 

@@ -259,4 +259,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
-require("spinner"):init()
+
+vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#FFFFFF", bg = "#1e1e2e" })
+vim.api.nvim_set_hl(0, "StatusLine", { bg = "#87afff", fg = "#000000", bold = true })
+vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#87afff", fg = "#000000" })
+vim.opt.fillchars:append({ vert = "│" })
