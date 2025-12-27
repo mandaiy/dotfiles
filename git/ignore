@@ -1,4 +1,11 @@
 #
+# direnv
+#
+.envrc
+
+.env
+
+#
 # MacOS X
 #
 *.bak

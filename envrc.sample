@@ -2,13 +2,6 @@
 
 export PYTHONPYCACHEPREFIX=/tmp/pycache
 
-# pipenv settings
-# export PIPENV_VERBOSITY=-1
-# export PIPENV_VENV=$(pipenv --venv 2>/dev/null || echo "")
-# if [ ! -z $PIPENV_VENV ]; then
-#   source $PIPENV_VENV/bin/activate
-# fi
-
 # uv settings
 if [ -d "$PWD/.venv/bin" ]; then
     source "$PWD/.venv/bin/activate"
