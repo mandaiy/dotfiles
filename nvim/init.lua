@@ -1,3 +1,7 @@
+local function is_ssh()
+   return vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
+end
+
 vim.loader.enable()
 
 vim.scriptencoding = "utf-8"
@@ -264,3 +268,17 @@ vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#FFFFFF", bg = "#1e1e2e" })
 vim.api.nvim_set_hl(0, "StatusLine", { bg = "#87afff", fg = "#000000", bold = true })
 vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#87afff", fg = "#000000" })
 vim.opt.fillchars:append({ vert = "│" })
+
+if is_ssh() then
+   vim.g.clipboard = {
+     name = 'OSC 52',
+     copy = {
+       ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+       ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+     },
+     paste = {
+       ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+       ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+     },
+   }
+end
