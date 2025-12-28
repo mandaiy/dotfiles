@@ -20,6 +20,25 @@ return {
       end,
    },
 
+   -- Sends buffer content to console REPL.
+   {
+      "jpalardy/vim-slime",
+      config = function()
+         vim.g.slime_target = "tmux"
+         vim.g.slime_python_ipython = 1
+         vim.g.slime_default_config = {
+            socket_name = "default",
+            target_pane = "{last}",
+         }
+         vim.g.slime_dont_ask_default = 1
+
+         vim.keymap.set("n", "<Leader>ip", function()
+            local s, e = require("helper-ipython").detect_cell_range()
+            vim.cmd(string.format("%d,%dSlimeSend", s, e))
+         end)
+      end,
+   },
+
    -- Lua library for nvim.
    { "nvim-lua/plenary.nvim" },
 
