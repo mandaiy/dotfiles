@@ -329,7 +329,7 @@ return {
       event = { "BufReadPre", "BufNewFile" },
       dependencies = { "hrsh7th/cmp-nvim-lsp" },
       config = function()
-         local lspconfig = require("lspconfig")
+         local lspconfig = vim.lsp.config
          local capabilities = vim.lsp.protocol.make_client_capabilities()
          local ok_cmp, cmp = pcall(require, "cmp_nvim_lsp")
          if ok_cmp then
@@ -365,38 +365,22 @@ return {
             end,
          })
 
-         local function on_ft(ft, server_name, extra)
-            local done = false
-            vim.api.nvim_create_autocmd("FileType", {
-               pattern = ft,
-               callback = function(args)
-                  if done then
-                     return
-                  end
-                  done = true
-                  local cfg = vim.tbl_deep_extend("force", base, extra or {})
-                  lspconfig[server_name].setup(cfg)
-
-                  vim.schedule(function()
-                     local manager = lspconfig[server_name].manager
-                     if manager then
-                        manager:try_add(args.buf)
-                     end
-                  end)
-               end,
-            })
+         local function setup(_, server, extra)
+            local cfg = vim.tbl_deep_extend("force", base, extra or {})
+            vim.lsp.config(server, cfg)
+            vim.lsp.enable(server)
          end
 
          if vim.fn.exepath("terraform-ls") ~= "" then
-            on_ft({ "terraform", "tf", "hcl" }, "terraformls")
+            setup({ "terraform", "tf", "hcl" }, "terraformls")
          end
 
-         local has_ruff = vim.fn.exepath("ruff-lsp") ~= ""
+         local has_ruff = vim.fn.exepath("ruff") ~= ""
          if has_ruff then
-            on_ft({ "python" }, "ruff_lsp")
+            setup({ "python" }, "ruff")
          end
          if vim.fn.exepath("pyright") ~= "" then
-            on_ft({ "python" }, "pyright", {
+            setup({ "python" }, "pyright", {
                settings = {
                   python = {
                      pythonPath = vim.fn.exepath("python"),
@@ -409,15 +393,15 @@ return {
          end
 
          if vim.fn.exepath("rust-analyzer") ~= "" then
-            on_ft({ "rust" }, "rust_analyzer")
+            setup({ "rust" }, "rust_analyzer")
          end
 
          if vim.fn.exepath("typescript-language-server") ~= "" then
-            on_ft({ "typescript", "typescriptreact", "javascript", "javascriptreact" }, "ts_ls")
+            setup({ "typescript", "typescriptreact", "javascript", "javascriptreact" }, "ts_ls")
          end
 
          if vim.fn.exepath("lua-language-server") ~= "" then
-            on_ft({ "lua" }, "lua_ls", {
+            setup({ "lua" }, "lua_ls", {
                settings = {
                   Lua = {
                      runtime = {
