@@ -562,19 +562,45 @@ return {
    -- Treesitter
    {
       "nvim-treesitter/nvim-treesitter",
+      branch = "main",
+      lazy = false,
       build = ":TSUpdate",
       dependencies = {
          "nvim-treesitter/nvim-treesitter-textobjects",
+         branch = "main",
       },
       config = function()
-         local configs = require("nvim-treesitter.configs")
+         local ts = require("nvim-treesitter")
+         ts.setup({
+            install_dir = vim.fn.stdpath("data") .. "/site",
+         })
 
-         configs.setup({
-            ensure_installed = { "lua", "vim", "vimdoc", "typescript", "javascript", "html", "rust", "python" },
-            sync_install = false,
-            auto_install = true,
-            highlight = { enable = true },
-            indent = { enable = true },
+         ts.install({
+            "lua",
+            "vim",
+            "vimdoc",
+            "typescript",
+            "javascript",
+            "json",
+            "html",
+            "rust",
+            "python",
+         })
+
+         local group = vim.api.nvim_create_augroup("setupTS", { clear = true })
+
+         vim.api.nvim_create_autocmd("FileType", {
+            group = group,
+            callback = function(args)
+               local lang = vim.treesitter.language.get_lang(args.match)
+               if not lang then
+                  return
+               end
+
+               if vim.tbl_contains(ts.get_installed(), lang) then
+                  pcall(vim.treesitter.start, args.buf, lang)
+               end
+            end,
          })
       end,
    },

@@ -33,4 +33,5 @@ RUN brew install \
     fzf \
     neovim \
     ripgrep \
+    tree-sitter-cli \
     tmux
