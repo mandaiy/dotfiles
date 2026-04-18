@@ -14,13 +14,16 @@
 | fzf               | Fuzzy search |
 | neovim            |      |
 | ripgrep           |      |
+| tree-sitter-cli   | Required by `nvim-treesitter` main branch |
 | tmux              |      |
 | [macOS Input Source Manager][macism] | |
 
 
 ```
-$ /opt/homebrew/bin/brew install bat fd fish fzf neovim ripgrep tmux  # macOS
+$ /opt/homebrew/bin/brew install bat fd fish fzf neovim ripgrep tree-sitter-cli tmux  # macOS
 ```
+
+If you use the `nvim-treesitter` `main` branch, install `tree-sitter-cli` as well.
 
 ### Change login shell
 
