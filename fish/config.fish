@@ -39,12 +39,13 @@ if status is-interactive
     end
 
     alias nvimdiff="nvim -d"
-    alias awslocal="AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy aws --endpoint-url=http://localhost:4566"
+    alias awslocal="AWS_REGION=ap-northeast-1 AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy aws --endpoint-url=http://localhost:4566"
 
     alias docker-sha256="docker inspect --format='{{index .RepoDigests 0}}'"
     alias docker-exited="docker ps --filter \"status=exited\""
 
     alias cd-gitroot="cd (git rev-parse --show-toplevel)"
+    alias git-main-worktree="git worktree list | head -n 1 | awk '{print \$1}'"
     alias git-current-branch="git rev-parse --abbrev-ref HEAD"
 
     alias _f=_fzf_wrapper
