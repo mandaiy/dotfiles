@@ -84,3 +84,8 @@ pip-selfcheck.json
 .mypy_cache
 
 *_history
+
+/.claude
+**/.claude/settings.local.json
+
+.envrc
