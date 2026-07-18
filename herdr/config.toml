@@ -1,0 +1,19 @@
+[ui]
+pane_gaps = false
+prompt_new_tab_name = false
+
+[ui.sound]
+enabled = false
+
+[ui.toast]
+delivery = "terminal"
+
+[keys]
+prefix = "ctrl+q"
+detach = "prefix+d"
+
+new_tab = "prefix+c"
+next_tab = "prefix+n"
+previous_tab = "prefix+p"
+split_vertical = "prefix+v"
+split_horizontal = "prefix+s"
