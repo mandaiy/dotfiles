@@ -237,6 +237,12 @@ end, { expr = true })
 -- Enable editorconfig
 vim.g.editorconfig = true
 
+-- Disable perl support.
+vim.g.loaded_perl_provider = 0
+-- Disable ruby support.
+vim.g.loaded_ruby_provider = 0
+-- Disable node support.
+vim.g.loaded_node_provider = 0
 -- Disable python2 support.
 vim.g.loaded_python_provider = 0
 
@@ -262,7 +268,14 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("plugins")
+require("lazy").setup({
+   { import = "plugins" },
+}, {
+   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
+   rocks = {
+      enabled = false,
+   },
+})
 
 vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#FFFFFF", bg = "#1e1e2e" })
 vim.api.nvim_set_hl(0, "StatusLine", { bg = "#87afff", fg = "#000000", bold = true })
@@ -271,14 +284,14 @@ vim.opt.fillchars:append({ vert = "│" })
 
 if is_ssh() then
    vim.g.clipboard = {
-     name = 'OSC 52',
-     copy = {
-       ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
-       ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
-     },
-     paste = {
-       ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
-       ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
-     },
+      name = "OSC 52",
+      copy = {
+         ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+         ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+      },
+      paste = {
+         ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+         ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+      },
    }
 end

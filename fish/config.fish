@@ -16,6 +16,8 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
     _brew_shellenv
 
+    fish_add_path $HOME/.local/bin
+
     if test -z "$XDG_CONFIG_HOME"
         set -gx XDG_CONFIG_HOME $HOME/.config
     end
@@ -31,11 +33,9 @@ if status is-interactive
 
     if type -q direnv
         eval (direnv hook fish)
+        # Prevent persistent servers from inheriting project-specific environments.
         alias tmux "direnv exec / tmux"
-    end
-
-    if type -q rbenv
-        rbenv init - fish | source
+        alias herdr "direnv exec / herdr"
     end
 
     alias nvimdiff="nvim -d"
@@ -77,9 +77,9 @@ if status is-interactive
     if not test -z "$Z_DATA"
         z-cleanup
     end
-end
 
-set -l config_local $XDG_CONFIG_HOME/fish/config.local.fish
-if [ -e $config_local ]
-    source $config_local
+    set -l config_local $XDG_CONFIG_HOME/fish/config.local.fish
+    if [ -e $config_local ]
+        source $config_local
+    end
 end

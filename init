@@ -162,8 +162,11 @@ def process() -> None:
         SymlinkToConfig("alacritty/alacritty.toml", exist_ok=True),
         # git
         SymlinkToConfig("git/ignore", exist_ok=True),
+        # herdr
+        SymlinkToConfig("herdr/config.toml", exist_ok=True),
         # nvim
         SymlinkToConfig("nvim/init.lua", exist_ok=True),
+        SymlinkToConfig("nvim/lazy-lock.json", exist_ok=True),
         SymlinkToConfig("nvim/lua", exist_ok=True),
         # tmux
         SymlinkToConfig("tmux/tmux.conf", exist_ok=True),
