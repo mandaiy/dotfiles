@@ -11,24 +11,21 @@ function _brew_shellenv
     test -x $brew; and eval ($brew shellenv)
 end
 
+_brew_shellenv
+
+if test -z "$XDG_CONFIG_HOME"
+    set -gx XDG_CONFIG_HOME $HOME/.config
+end
+if test -z "$EDITOR"
+    set -gx EDITOR nvim
+end
+if test -z "$GOPATH"
+    set -gx GOPATH $HOME/.go
+    fish_add_path $GOPATH/bin
+end
 
 if status is-interactive
     # Commands to run in interactive sessions can go here
-    _brew_shellenv
-
-    if test -z "$XDG_CONFIG_HOME"
-        set -gx XDG_CONFIG_HOME $HOME/.config
-    end
-
-    if test -z "$EDITOR"
-        set -gx EDITOR nvim
-    end
-
-    if test -z "$GOPATH"
-        set -gx GOPATH $HOME/.go
-        fish_add_path $GOPATH/bin
-    end
-
     if type -q direnv
         eval (direnv hook fish)
         alias tmux "direnv exec / tmux"
@@ -77,9 +74,9 @@ if status is-interactive
     if not test -z "$Z_DATA"
         z-cleanup
     end
-end
 
-set -l config_local $XDG_CONFIG_HOME/fish/config.local.fish
-if [ -e $config_local ]
-    source $config_local
+    set -l config_local $XDG_CONFIG_HOME/fish/config.local.fish
+    if [ -e $config_local ]
+        source $config_local
+    end
 end

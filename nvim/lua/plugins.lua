@@ -474,21 +474,6 @@ return {
       end,
    },
 
-   -- Github copilot.
-   {
-      "github/copilot.vim",
-      config = function()
-         vim.keymap.set(
-            "i",
-            "<C-J>",
-            "copilot#Accept('<CR>')",
-            { silent = true, noremap = true, expr = true, replace_keycodes = false }
-         )
-         vim.g.copilot_no_tab_map = true
-         vim.g.copilot_filetypes = { python = true, rust = true, typescript = true, typescriptreact = true }
-      end,
-   },
-
    -- Claude Code.
    {
       "coder/claudecode.nvim",
@@ -513,6 +498,18 @@ return {
          { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
          { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
       },
+   },
+
+   -- A plugin for dbt.
+   {
+      "gbakes/dbt-forge.nvim",
+      url = "https://github.com/gbakes/dbt-forge.git",
+      config = function()
+         require("dbt-forge").setup({
+            -- Configuration options here
+         })
+      end,
+      ft = "sql", -- Load only for SQL files
    },
 
    -- A better spell checker.
