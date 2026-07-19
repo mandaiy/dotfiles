@@ -162,6 +162,7 @@ def process() -> None:
         SymlinkToConfig("alacritty/alacritty.toml", exist_ok=True),
         # git
         SymlinkToConfig("git/ignore", exist_ok=True),
+        SymlinkToConfig("git/config", exist_ok=True),
         # herdr
         SymlinkToConfig("herdr/config.toml", exist_ok=True),
         # nvim

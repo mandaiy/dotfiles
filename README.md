@@ -16,11 +16,12 @@
 | ripgrep           |      |
 | tree-sitter-cli   | Required by `nvim-treesitter` main branch |
 | herdr             |      |
+| git-delta         |      |
 | [macOS Input Source Manager][macism] | |
 
 
 ```
-$ /opt/homebrew/bin/brew install bat fd fish fzf neovim ripgrep tree-sitter-cli herdr  # macOS
+$ /opt/homebrew/bin/brew install bat fd fish fzf neovim ripgrep tree-sitter-cli herdr git-delta  # macOS
 ```
 
 If you use the `nvim-treesitter` `main` branch, install `tree-sitter-cli` as well.
