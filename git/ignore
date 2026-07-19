@@ -2,7 +2,6 @@
 # direnv
 #
 .envrc
-
 .env
 
 #
@@ -85,7 +84,5 @@ pip-selfcheck.json
 
 *_history
 
-/.claude
+# Claude Code
 **/.claude/settings.local.json
-
-.envrc
