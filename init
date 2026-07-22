@@ -160,6 +160,8 @@ def process() -> None:
     install_items = [
         # alacritty
         SymlinkToConfig("alacritty/alacritty.toml", exist_ok=True),
+        # ghostty
+        SymlinkToConfig("ghostty/config.ghostty", exist_ok=True),
         # git
         SymlinkToConfig("git/ignore", exist_ok=True),
         SymlinkToConfig("git/config", exist_ok=True),
