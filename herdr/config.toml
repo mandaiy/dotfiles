@@ -19,3 +19,6 @@ next_tab = "prefix+n"
 previous_tab = "prefix+p"
 split_vertical = "prefix+v"
 split_horizontal = "prefix+s"
+
+[experimental]
+kitty_graphics = true

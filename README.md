@@ -57,6 +57,7 @@ esac
 
 [brew]:https://brew.sh/index
 [fisher]:https://github.com/jorgebucaran/fisher
+[ghostty]:https://ghostty.org/
 [macism]:https://github.com/laishulu/macism
 
 ### Setup Neovim

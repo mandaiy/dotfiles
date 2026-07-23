@@ -1,0 +1,12 @@
+font-family = "HackGen35 Console NF"
+font-feature = -dlig
+font-size = 16
+
+shell-integration-features = no-cursor
+cursor-style = block
+cursor-style-blink = false
+
+macos-titlebar-style = hidden
+macos-window-buttons = hidden
+macos-titlebar-proxy-icon = hidden
+macos-option-as-alt = true
