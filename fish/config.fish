@@ -75,7 +75,7 @@ if status is-interactive
     set -gx VIRTUAL_ENV_DISABLE_PROMPT true
 
     if not test -z "$Z_DATA"
-        z-cleanup
+        cleanup-z
     end
 
     set -l config_local $XDG_CONFIG_HOME/fish/config.local.fish
