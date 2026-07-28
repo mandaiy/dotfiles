@@ -88,11 +88,11 @@ pip-selfcheck.json
 .playwright-mcp
 
 # Claude Code
-/CLAUDE.local.md
+CLAUDE.local.md
 **/.claude/settings.local.json
 
 # Codex
-/AGENTS.override.md
+AGENTS.override.md
 
 # local stash directory
 .local-stash
