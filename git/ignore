@@ -1,5 +1,3 @@
-# local stash directory
-.local-stash
 #
 # direnv
 #
@@ -86,8 +84,15 @@ pip-selfcheck.json
 
 *_history
 
-# Claude Code
-**/.claude/settings.local.json
-
 # playwright-mcp
 .playwright-mcp
+
+# Claude Code
+/CLAUDE.local.md
+**/.claude/settings.local.json
+
+# Codex
+/AGENTS.override.md
+
+# local stash directory
+.local-stash
