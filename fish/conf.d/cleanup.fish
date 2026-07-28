@@ -18,5 +18,5 @@ function cleanup-swap
 end
 
 function cleanup-ds-store
-    fd -HI ".DS_Store" -X rm
+    fd -HI '^\.DS_Store$' -X rm
 end
