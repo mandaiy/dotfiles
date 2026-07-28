@@ -1,4 +1,4 @@
-function z-cleanup --description "Clean up z data"
+function cleanup-z --description "Clean up z data"
     # Because POSIX sed does not have -i option,
     # here we use tmpfile and redirect to update the file.
     set -l tmp_file (mktemp)
@@ -11,4 +11,12 @@ function z-cleanup --description "Clean up z data"
     end
 
     rm -f $tmp_file
+end
+
+function cleanup-swap
+    rm $HOME/.local/state/nvim/swap/*
+end
+
+function cleanup-ds-store
+    fd -HI '^\.DS_Store$' -X rm
 end
