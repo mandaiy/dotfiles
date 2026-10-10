@@ -32,7 +32,7 @@ if status is-interactive
     end
 
     if type -q direnv
-        eval (direnv hook fish)
+        direnv hook fish | source
         # Prevent persistent servers from inheriting project-specific environments.
         alias tmux "direnv exec / tmux"
         alias herdr "direnv exec / herdr"
